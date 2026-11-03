@@ -25,7 +25,7 @@ main{padding:12px;max-width:720px;margin:auto}
 .mu{color:var(--mu);font-size:13px}
 table{width:100%;border-collapse:collapse}
 td,th{border-bottom:1px solid var(--bd);padding:6px;text-align:start}
-.err{color:var(--rd)}
+.err{color:var(--rd)}.bad{border-color:var(--rd)!important;background:#fdd!important;color:#900!important}
 @media print{header,.tabs,.noprint{display:none!important}.card{border:0}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -38,10 +38,10 @@ const SB_URL='https://uiwjyqokxqjfajuphrul.supabase.co',SB_KEY='sb_publishable_B
 const sb=supabase.createClient(SB_URL,SB_KEY);
 const sb2=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'gs-tmp'}});
 const T={
-fr:{login:"Connexion",id:"Identifiant",pw:"Mot de passe",go:"Se connecter",out:"Déconnexion",bad:"Identifiant ou mot de passe incorrect",noprof:"Compte non autorisé",susp:"École suspendue",chk:"Identifiant (lettres/chiffres), nom, mot de passe (6+)",classes:"Classes",subjects:"Matières",students:"Élèves",grades:"Notes",report:"Bulletin",schools:"Écoles",add:"Ajouter",name:"Nom",coef:"Coefficient",cls:"Classe",subj:"Matière",stu:"Élève",avg:"Moyenne",print:"Imprimer",choose:"Choisir",none:"Aucune donnée",note:"Note",sname:"Nom de l’école",on:"Actif",off:"Suspendu",tog:"Suspendre/Activer",load:"Chargement…",settings:"Paramètres",save:"Enregistrer",gmax:"Note maximale",pass:"Moyenne de passage",terms:"Nombre de périodes",curr:"Monnaie",level:"Niveau",lv_kg:"Maternelle",lv_pri:"Primaire",lv_mid:"Collège",lv_high:"Lycée",term:"Période",saved:"Enregistré",passed:"Admis",failed:"Non admis"},
-en:{login:"Login",id:"Identifier",pw:"Password",go:"Log in",out:"Log out",bad:"Wrong identifier or password",noprof:"Account not authorized",susp:"School suspended",chk:"Identifier (letters/digits), name, password (6+)",classes:"Classes",subjects:"Subjects",students:"Students",grades:"Grades",report:"Report card",schools:"Schools",add:"Add",name:"Name",coef:"Coefficient",cls:"Class",subj:"Subject",stu:"Student",avg:"Average",print:"Print",choose:"Choose",none:"No data",note:"Grade",sname:"School name",on:"Active",off:"Suspended",tog:"Suspend/Activate",load:"Loading…",settings:"Settings",save:"Save",gmax:"Maximum grade",pass:"Pass mark",terms:"Number of terms",curr:"Currency",level:"Level",lv_kg:"Kindergarten",lv_pri:"Primary",lv_mid:"Junior secondary",lv_high:"Senior secondary",term:"Term",saved:"Saved",passed:"Passed",failed:"Failed"},
-ar:{login:"تسجيل الدخول",id:"المعرّف",pw:"كلمة المرور",go:"دخول",out:"خروج",bad:"المعرّف أو كلمة المرور غير صحيحة",noprof:"حساب غير مصرّح",susp:"المدرسة موقوفة",chk:"المعرّف (حروف/أرقام) والاسم وكلمة المرور (6+)",classes:"الأقسام",subjects:"المواد",students:"التلاميذ",grades:"الدرجات",report:"كشف النقاط",schools:"المدارس",add:"إضافة",name:"الاسم",coef:"المعامل",cls:"القسم",subj:"المادة",stu:"التلميذ",avg:"المعدل",print:"طباعة",choose:"اختر",none:"لا توجد بيانات",note:"الدرجة",sname:"اسم المدرسة",on:"نشطة",off:"موقوفة",tog:"إيقاف/تفعيل",load:"جاري التحميل…",settings:"الإعدادات",save:"حفظ",gmax:"الدرجة القصوى",pass:"درجة النجاح",terms:"عدد الفترات",curr:"العملة",level:"المستوى",lv_kg:"الروضة",lv_pri:"الابتدائي",lv_mid:"الإعدادي",lv_high:"الثانوي",term:"الفترة",saved:"تم الحفظ",passed:"ناجح",failed:"راسب"}};
-let lang='fr',user=null,tab='classes',sel={},err='',D={schools:[],classes:[],subjects:[],students:[]},G={};
+fr:{login:"Connexion",id:"Identifiant",pw:"Mot de passe",go:"Se connecter",out:"Déconnexion",bad:"Identifiant ou mot de passe incorrect",noprof:"Compte non autorisé",susp:"École suspendue",chk:"Identifiant (lettres/chiffres), nom, mot de passe (6+)",classes:"Classes",subjects:"Matières",students:"Élèves",grades:"Notes",report:"Bulletin",schools:"Écoles",add:"Ajouter",name:"Nom",coef:"Coefficient",cls:"Classe",subj:"Matière",stu:"Élève",avg:"Moyenne",print:"Imprimer",choose:"Choisir",none:"Aucune donnée",note:"Note",sname:"Nom de l’école",on:"Actif",off:"Suspendu",tog:"Suspendre/Activer",load:"Chargement…",settings:"Paramètres",save:"Enregistrer",staff:"Personnel",fname:"Nom complet",uname:"Nom d’utilisateur",r_teacher:"Enseignant",r_accountant:"Comptable",r_it:"Informaticien",r_parent:"Parent",matr:"Matricule",chk2:"Nom, utilisateur (lettres/chiffres) et mot de passe (6+) requis",nomat:"Matricule introuvable",fees:"Frais",soon:"Bientôt disponible",hint:"Personnel/parents : utilisateur@école (ex. prof1@ecole1)",gmax:"Note maximale",pass:"Moyenne de passage",terms:"Nombre de périodes",curr:"Monnaie",level:"Niveau",lv_kg:"Maternelle",lv_pri:"Primaire",lv_mid:"Collège",lv_high:"Lycée",term:"Période",saved:"Enregistré",passed:"Admis",failed:"Non admis"},
+en:{login:"Login",id:"Identifier",pw:"Password",go:"Log in",out:"Log out",bad:"Wrong identifier or password",noprof:"Account not authorized",susp:"School suspended",chk:"Identifier (letters/digits), name, password (6+)",classes:"Classes",subjects:"Subjects",students:"Students",grades:"Grades",report:"Report card",schools:"Schools",add:"Add",name:"Name",coef:"Coefficient",cls:"Class",subj:"Subject",stu:"Student",avg:"Average",print:"Print",choose:"Choose",none:"No data",note:"Grade",sname:"School name",on:"Active",off:"Suspended",tog:"Suspend/Activate",load:"Loading…",settings:"Settings",save:"Save",staff:"Staff",fname:"Full name",uname:"Username",r_teacher:"Teacher",r_accountant:"Accountant",r_it:"IT officer",r_parent:"Parent",matr:"Student ID",chk2:"Name, username (letters/digits) and password (6+) required",nomat:"Student ID not found",fees:"Fees",soon:"Coming soon",hint:"Staff/parents: username@school (e.g. teacher1@ecole1)",gmax:"Maximum grade",pass:"Pass mark",terms:"Number of terms",curr:"Currency",level:"Level",lv_kg:"Kindergarten",lv_pri:"Primary",lv_mid:"Junior secondary",lv_high:"Senior secondary",term:"Term",saved:"Saved",passed:"Passed",failed:"Failed"},
+ar:{login:"تسجيل الدخول",id:"المعرّف",pw:"كلمة المرور",go:"دخول",out:"خروج",bad:"المعرّف أو كلمة المرور غير صحيحة",noprof:"حساب غير مصرّح",susp:"المدرسة موقوفة",chk:"المعرّف (حروف/أرقام) والاسم وكلمة المرور (6+)",classes:"الأقسام",subjects:"المواد",students:"التلاميذ",grades:"الدرجات",report:"كشف النقاط",schools:"المدارس",add:"إضافة",name:"الاسم",coef:"المعامل",cls:"القسم",subj:"المادة",stu:"التلميذ",avg:"المعدل",print:"طباعة",choose:"اختر",none:"لا توجد بيانات",note:"الدرجة",sname:"اسم المدرسة",on:"نشطة",off:"موقوفة",tog:"إيقاف/تفعيل",load:"جاري التحميل…",settings:"الإعدادات",save:"حفظ",staff:"الموظفون",fname:"الاسم الكامل",uname:"اسم المستخدم",r_teacher:"معلم",r_accountant:"محاسب",r_it:"مسؤول المعلوماتية",r_parent:"ولي الأمر",matr:"رقم التسجيل",chk2:"الاسم واسم المستخدم (حروف/أرقام) وكلمة المرور (6+) مطلوبة",nomat:"رقم التسجيل غير موجود",fees:"الرسوم",soon:"قريبًا",hint:"الموظفون/أولياء الأمور: المستخدم@المدرسة (مثال teacher1@ecole1)",gmax:"الدرجة القصوى",pass:"درجة النجاح",terms:"عدد الفترات",curr:"العملة",level:"المستوى",lv_kg:"الروضة",lv_pri:"الابتدائي",lv_mid:"الإعدادي",lv_high:"الثانوي",term:"الفترة",saved:"تم الحفظ",passed:"ناجح",failed:"راسب"}};
+let lang='fr',user=null,tab='classes',sel={},err='',D={schools:[],classes:[],subjects:[],students:[],staff:[]},G={};
 try{lang=localStorage.getItem('gs_lang')||'fr'}catch(e){}
 const t=k=>T[lang][k]||k;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -50,11 +50,12 @@ const opts=(a,v)=>`<option value="">${t('choose')}</option>`+a.map(x=>`<option v
 const nm=(a,id)=>(a.find(x=>x.id==id)||{}).name||'';
 function setLang(l){lang=l;try{localStorage.setItem('gs_lang',l)}catch(e){}render()}
 async function load(){
- const r=await Promise.all(['schools','classes','subjects','students','grades'].map(k=>sb.from(k).select('*').order(k=='schools'?'created_at':'name',{ascending:true})));
+ const r=await Promise.all(['schools','classes','subjects','students','grades','profiles'].map(k=>{const q=sb.from(k).select('*'),o={schools:'created_at',classes:'name',subjects:'name',students:'name'}[k];return o?q.order(o,{ascending:true}):q}));
  ['schools','classes','subjects','students'].forEach((k,i)=>D[k]=r[i].data||[]);
- G={};(r[4].data||[]).forEach(g=>{G[g.student_id+'_'+g.subject_id+'_'+g.term]=g.value})}
+ D.staff=(r[5].data||[]).filter(p=>!['school_admin','superadmin'].includes(p.role));G={};(r[4].data||[]).forEach(g=>{G[g.student_id+'_'+g.subject_id+'_'+g.term]=g.value})}
+const toEmail=i=>{i=i.trim();if(i.includes('@')){const [u,d]=i.split('@');if(d.includes('.'))return i;return u.toLowerCase()+'+'+d.toLowerCase()+DOM}return i.toLowerCase()+DOM};
 async function login(){
- const i=$('i').value.trim(),p=$('p').value,email=i.includes('@')?i:i.toLowerCase()+DOM;
+ const i=$('i').value.trim(),p=$('p').value,email=toEmail(i);
  const {error}=await sb.auth.signInWithPassword({email,password:p});
  if(error){err=t('bad');return render()}
  err='';await boot()}
@@ -67,16 +68,16 @@ async function boot(){
  user={role:pr.role,sid:pr.school_id,admin:pr.role=='superadmin'};
  if(user.sid){const {data:s}=await sb.from('schools').select('name').eq('id',user.sid).maybeSingle();
   if(!s){await sb.auth.signOut();err=t('susp');user=null;return render()}user.name=s.name}
- tab=user.admin?'schools':'classes';await load();render()}
+ tab=user.admin?'schools':({teacher:'grades',it:'classes',accountant:'fees',parent:'report'}[user.role]||'classes');await load();if(user.role=='parent'){const s0=D.students[0]||{};sel={c:s0.class_id,e:s0.id}}render()}
 async function logout(){await sb.auth.signOut();user=null;sel={};render()}
-function go(x){tab=x;sel={};render()}
+function go(x){tab=x;if(user.role!='parent')sel={};render()}
 function pick(k,v){sel[k]=v;render()}
 async function run(p){const r=await p;if(r.error)alert(r.error.message);await load();render()}
 const ins=(k,o)=>run(sb.from(k).insert({...o,school_id:user.sid}));
 const del=(k,id)=>run(sb.from(k).delete().eq('id',id));
 function addClass(){const n=$('n').value.trim();if(n)ins('classes',{name:n,level:$('lv').value||null})}
 function addSubj(){const n=$('n').value.trim(),c=$('c').value;if(n&&c)ins('subjects',{name:n,class_id:c,coef:+$('f').value||1})}
-function addStu(){const n=$('n').value.trim(),c=$('c').value;if(n&&c)ins('students',{name:n,class_id:c})}
+function addStu(){const n=$('n').value.trim(),c=$('c').value;if(n&&c)ins('students',{name:n,class_id:c,matricule:$('m').value.trim()||null})}
 async function addSchool(){
  const i=$('si').value.trim().toLowerCase(),n=$('n').value.trim(),p=$('sp').value;
  if(!/^[a-z0-9._-]+$/.test(i)||!n||p.length<6)return alert(t('chk'));
@@ -99,24 +100,39 @@ const lvl=k=>k?t('lv_'+k):'';
 const termSel=()=>{const n=SC().terms||1;return n>1?`<select onchange="pick('term',+this.value)">${Array.from({length:n},(_,i)=>`<option value="${i+1}" ${(sel.term||1)==i+1?'selected':''}>${t('term')} ${i+1}</option>`).join('')}</select>`:''};
 async function saveSettings(){const o={name:$('sn').value.trim(),grade_max:+$('gm').value||20,pass_mark:+$('pm').value||10,terms:Math.max(1,Math.min(6,+$('tm').value||3)),currency:$('cu').value.trim()};
  if(!o.name)return;const {error}=await sb.from('schools').update(o).eq('id',user.sid);if(error)return alert(error.message);user.name=o.name;await load();render();alert(t('saved'))}
+function chk(el){const m=SC().grade_max||20;if(el.value!==''&&(+el.value>m||+el.value<0)){el.classList.add('bad');el.value=el.dataset.old||'';setTimeout(()=>el.classList.remove('bad'),700)}else el.dataset.old=el.value}
+async function addStaff(){
+ const fn=$('fn').value.trim(),us=$('us').value.trim().toLowerCase(),pw=$('pw2').value,role=$('rl').value,mt=$('mt').value.trim();
+ if(!/^[a-z0-9._-]+$/.test(us)||!fn||pw.length<6)return alert(t('chk2'));
+ let stu=null;if(role=='parent'){stu=D.students.find(x=>x.matricule&&x.matricule.toLowerCase()==mt.toLowerCase());if(!stu)return alert(t('nomat'))}
+ const {data:u,error}=await sb2.auth.signUp({email:us+'+'+D.schools[0].identifier+DOM,password:pw});
+ if(error||!u.user)return alert(error?error.message:'Error');
+ const {error:e3}=await sb.from('profiles').insert({user_id:u.user.id,school_id:user.sid,role,full_name:fn,username:us,student_id:stu?stu.id:null});
+ if(e3)return alert(e3.message);await load();render()}
+async function resetPw(uid){const pw=prompt(t('pw')+' (6+)');if(!pw)return;if(pw.length<6)return alert(t('chk2'));const {error}=await sb.rpc('set_staff_password',{uid,pw});alert(error?error.message:t('saved'))}
+async function delStaff(uid){if(!confirm('?'))return;const {error}=await sb.rpc('delete_staff',{uid});if(error)alert(error.message);await load();render()}
+function staffView(){const roles=['teacher','accountant','it','parent'],sc=D.schools[0].identifier;
+ return `<div class="card"><div class="row"><input id="fn" placeholder="${t('fname')}"><input id="us" placeholder="${t('uname')}" autocapitalize="off"></div><div class="row"><input id="pw2" placeholder="${t('pw')}"><select id="rl" onchange="$('mt').style.display=this.value=='parent'?'':'none'">${roles.map(r=>`<option value="${r}">${t('r_'+r)}</option>`).join('')}</select></div><div class="row"><input id="mt" placeholder="${t('matr')}" style="display:none"></div><button class="btn" onclick="addStaff()">${t('add')}</button></div><div class="card">${D.staff.map(p=>`<div class="li"><span><b>${esc(p.full_name||'')}</b> <span class="mu">${t('r_'+p.role)}</span><br><span class="mu">${esc(p.username||'')}@${esc(sc)}${p.student_id?' · '+esc(nm(D.students,p.student_id)):''}</span></span><span><button onclick="resetPw('${p.user_id}')">${t('pw')}</button><button class="x" onclick="delStaff('${p.user_id}')">✕</button></span></div>`).join('')||`<p class="mu">${t('none')}</p>`}</div>`}
 function view(){
  if(user.admin)return `<div class="card"><div class="row"><input id="si" placeholder="${t('id')}" autocapitalize="off"><input id="n" placeholder="${t('sname')}"><input id="sp" placeholder="${t('pw')}"></div><button class="btn" onclick="addSchool()">${t('add')}</button></div><div class="card">${D.schools.map(s=>`<div class="li"><span><b>${esc(s.name)}</b><br><span class="mu">${esc(s.identifier)} · ${s.active?t('on'):t('off')}</span></span><span><button onclick="toggle('${s.id}',${s.active})">${t('tog')}</button><button class="x" onclick="delSchool('${s.id}')">✕</button></span></div>`).join('')||`<p class="mu">${t('none')}</p>`}</div>`;
  const C=D.classes;
+ if(tab=='staff')return staffView();
+ if(tab=='fees')return `<div class="card">${t('soon')}</div>`;
  if(tab=='settings'){const s=SC();return `<div class="card"><label class="mu">${t('sname')}</label><div class="row"><input id="sn" value="${esc(s.name||'')}"></div><label class="mu">${t('gmax')}</label><div class="row"><input id="gm" type="number" value="${s.grade_max}"></div><label class="mu">${t('pass')}</label><div class="row"><input id="pm" type="number" step="0.5" value="${s.pass_mark}"></div><label class="mu">${t('terms')}</label><div class="row"><input id="tm" type="number" min="1" max="6" value="${s.terms}"></div><label class="mu">${t('curr')}</label><div class="row"><input id="cu" value="${esc(s.currency||'')}"></div><button class="btn" onclick="saveSettings()">${t('save')}</button></div>`}
  if(tab=='classes')return `<div class="card"><div class="row"><input id="n" placeholder="${t('name')}"><select id="lv"><option value="">${t('level')}</option>${['kg','pri','mid','high'].map(k=>`<option value="${k}">${lvl(k)}</option>`).join('')}</select><button class="btn" onclick="addClass()">${t('add')}</button></div>${list('classes',x=>esc(x.name)+` <span class="mu">${lvl(x.level)}</span>`)}</div>`;
  if(tab=='subjects')return `<div class="card"><div class="row">${classSel()}<input id="n" placeholder="${t('name')}"><input id="f" type="number" min="1" placeholder="${t('coef')}"></div><button class="btn" onclick="addSubj()">${t('add')}</button>${list('subjects',x=>`${esc(x.name)} <span class="mu">(${esc(nm(C,x.class_id))} · ×${x.coef})</span>`)}</div>`;
- if(tab=='students')return `<div class="card"><div class="row">${classSel()}<input id="n" placeholder="${t('name')}"></div><button class="btn" onclick="addStu()">${t('add')}</button>${list('students',x=>`${esc(x.name)} <span class="mu">(${esc(nm(C,x.class_id))})</span>`)}</div>`;
+ if(tab=='students')return `<div class="card"><div class="row">${classSel()}<input id="n" placeholder="${t('name')}"><input id="m" placeholder="${t('matr')}"></div><button class="btn" onclick="addStu()">${t('add')}</button>${list('students',x=>`${esc(x.name)} <span class="mu">(${esc(nm(C,x.class_id))}${x.matricule?' · '+esc(x.matricule):''})</span>`)}</div>`;
  const S=D.subjects.filter(x=>x.class_id==sel.c),E=D.students.filter(x=>x.class_id==sel.c);
- if(tab=='grades')return `<div class="card"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('s',this.value)">${opts(S,sel.s)}</select>${termSel()}</div>${sel.s?E.map(e=>`<div class="li"><span>${esc(e.name)}</span><input type="number" min="0" max="${SC().grade_max||20}" step="0.25" style="width:90px;flex:none" value="${G[e.id+'_'+sel.s+'_'+(sel.term||1)]??''}" onchange="setGrade('${e.id}','${sel.s}',this.value)"></div>`).join('')||`<p class="mu">${t('none')}</p>`:''}</div>`;
+ if(tab=='grades')return `<div class="card"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('s',this.value)">${opts(S,sel.s)}</select>${termSel()}</div>${sel.s?E.map(e=>`<div class="li"><span>${esc(e.name)}</span><input type="number" min="0" max="${SC().grade_max||20}" step="0.25" style="width:90px;flex:none" oninput="chk(this)" data-old="${G[e.id+'_'+sel.s+'_'+(sel.term||1)]??''}" value="${G[e.id+'_'+sel.s+'_'+(sel.term||1)]??''}" onchange="setGrade('${e.id}','${sel.s}',this.value)"></div>`).join('')||`<p class="mu">${t('none')}</p>`:''}</div>`;
  let r='';
  if(sel.e){let tw=0,tc=0;const rows=S.map(s=>{const g=G[sel.e+'_'+s.id+'_'+(sel.term||1)];if(g!=null){tw+=g*s.coef;tc+=+s.coef}return `<tr><td>${esc(s.name)}</td><td>${s.coef}</td><td>${g??'-'}</td></tr>`}).join('');
   r=`<div class="card"><h3>${esc(user.name)}</h3><p>${esc(nm(E,sel.e))} — ${esc(nm(C,sel.c))}</p><table><tr><th>${t('subj')}</th><th>${t('coef')}</th><th>${t('note')}</th></tr>${rows}</table><h3>${t('avg')}: ${tc?(tw/tc).toFixed(2):'-'} / ${SC().grade_max||20}${tc?` — ${tw/tc>=(SC().pass_mark||10)?t('passed'):t('failed')}`:''}</h3><button class="btn noprint" onclick="window.print()">${t('print')}</button></div>`}
- return `<div class="card noprint"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(E,sel.e)}</select>${termSel()}</div></div>`+r}
+ return (user.role=='parent'?`<div class="card noprint">${termSel()}</div>`:`<div class="card noprint"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(E,sel.e)}</select>${termSel()}</div></div>`)+r}
 function render(){
  document.documentElement.lang=lang;document.documentElement.dir=lang=='ar'?'rtl':'ltr';$('lg').value=lang;
  $('who').innerHTML=user?`<button class="x" style="color:#fff" onclick="logout()">${t('out')}</button>`:'';
- if(!user){$('app').innerHTML=`<div class="card"><h2>${t('login')}</h2><div class="row"><input id="i" placeholder="${t('id')}" autocapitalize="off"></div><div class="row"><input id="p" type="password" placeholder="${t('pw')}"></div><button class="btn" onclick="login()">${t('go')}</button><p class="err">${err}</p></div>`;return}
- const tabs=user.admin?['schools']:['classes','subjects','students','grades','report',...(user.role=='school_admin'?['settings']:[])];
+ if(!user){$('app').innerHTML=`<div class="card"><h2>${t('login')}</h2><div class="row"><input id="i" placeholder="${t('id')}" autocapitalize="off"></div><div class="row"><input id="p" type="password" placeholder="${t('pw')}"></div><button class="btn" onclick="login()">${t('go')}</button><p class="err">${err}</p><p class="mu">${t('hint')}</p></div>`;return}
+ const TABS={school_admin:['classes','subjects','students','grades','report','staff','settings'],teacher:['grades','report'],it:['classes','subjects','students'],accountant:['fees'],parent:['report']};const tabs=user.admin?['schools']:(TABS[user.role]||[]);
  $('app').innerHTML=`<div class="tabs">${tabs.map(x=>`<button class="${x==tab?'on':''}" onclick="go('${x}')">${t(x)}</button>`).join('')}</div>`+view()}
 render();boot();
 </script>
