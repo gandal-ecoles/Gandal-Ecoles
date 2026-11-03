@@ -38,9 +38,9 @@ const SB_URL='https://uiwjyqokxqjfajuphrul.supabase.co',SB_KEY='sb_publishable_B
 const sb=supabase.createClient(SB_URL,SB_KEY);
 const sb2=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'gs-tmp'}});
 const T={
-fr:{login:"Connexion",id:"Identifiant",pw:"Mot de passe",go:"Se connecter",out:"Déconnexion",bad:"Identifiant ou mot de passe incorrect",noprof:"Compte non autorisé",susp:"École suspendue",chk:"Identifiant (lettres/chiffres), nom, mot de passe (6+)",classes:"Classes",subjects:"Matières",students:"Élèves",grades:"Notes",report:"Bulletin",schools:"Écoles",add:"Ajouter",name:"Nom",coef:"Coefficient",cls:"Classe",subj:"Matière",stu:"Élève",avg:"Moyenne",print:"Imprimer",choose:"Choisir",none:"Aucune donnée",note:"Note",sname:"Nom de l’école",on:"Actif",off:"Suspendu",tog:"Suspendre/Activer",load:"Chargement…"},
-en:{login:"Login",id:"Identifier",pw:"Password",go:"Log in",out:"Log out",bad:"Wrong identifier or password",noprof:"Account not authorized",susp:"School suspended",chk:"Identifier (letters/digits), name, password (6+)",classes:"Classes",subjects:"Subjects",students:"Students",grades:"Grades",report:"Report card",schools:"Schools",add:"Add",name:"Name",coef:"Coefficient",cls:"Class",subj:"Subject",stu:"Student",avg:"Average",print:"Print",choose:"Choose",none:"No data",note:"Grade",sname:"School name",on:"Active",off:"Suspended",tog:"Suspend/Activate",load:"Loading…"},
-ar:{login:"تسجيل الدخول",id:"المعرّف",pw:"كلمة المرور",go:"دخول",out:"خروج",bad:"المعرّف أو كلمة المرور غير صحيحة",noprof:"حساب غير مصرّح",susp:"المدرسة موقوفة",chk:"المعرّف (حروف/أرقام) والاسم وكلمة المرور (6+)",classes:"الأقسام",subjects:"المواد",students:"التلاميذ",grades:"الدرجات",report:"كشف النقاط",schools:"المدارس",add:"إضافة",name:"الاسم",coef:"المعامل",cls:"القسم",subj:"المادة",stu:"التلميذ",avg:"المعدل",print:"طباعة",choose:"اختر",none:"لا توجد بيانات",note:"الدرجة",sname:"اسم المدرسة",on:"نشطة",off:"موقوفة",tog:"إيقاف/تفعيل",load:"جاري التحميل…"}};
+fr:{login:"Connexion",id:"Identifiant",pw:"Mot de passe",go:"Se connecter",out:"Déconnexion",bad:"Identifiant ou mot de passe incorrect",noprof:"Compte non autorisé",susp:"École suspendue",chk:"Identifiant (lettres/chiffres), nom, mot de passe (6+)",classes:"Classes",subjects:"Matières",students:"Élèves",grades:"Notes",report:"Bulletin",schools:"Écoles",add:"Ajouter",name:"Nom",coef:"Coefficient",cls:"Classe",subj:"Matière",stu:"Élève",avg:"Moyenne",print:"Imprimer",choose:"Choisir",none:"Aucune donnée",note:"Note",sname:"Nom de l’école",on:"Actif",off:"Suspendu",tog:"Suspendre/Activer",load:"Chargement…",settings:"Paramètres",save:"Enregistrer",gmax:"Note maximale",pass:"Moyenne de passage",terms:"Nombre de périodes",curr:"Monnaie",level:"Niveau",lv_kg:"Maternelle",lv_pri:"Primaire",lv_mid:"Collège",lv_high:"Lycée",term:"Période",saved:"Enregistré",passed:"Admis",failed:"Non admis"},
+en:{login:"Login",id:"Identifier",pw:"Password",go:"Log in",out:"Log out",bad:"Wrong identifier or password",noprof:"Account not authorized",susp:"School suspended",chk:"Identifier (letters/digits), name, password (6+)",classes:"Classes",subjects:"Subjects",students:"Students",grades:"Grades",report:"Report card",schools:"Schools",add:"Add",name:"Name",coef:"Coefficient",cls:"Class",subj:"Subject",stu:"Student",avg:"Average",print:"Print",choose:"Choose",none:"No data",note:"Grade",sname:"School name",on:"Active",off:"Suspended",tog:"Suspend/Activate",load:"Loading…",settings:"Settings",save:"Save",gmax:"Maximum grade",pass:"Pass mark",terms:"Number of terms",curr:"Currency",level:"Level",lv_kg:"Kindergarten",lv_pri:"Primary",lv_mid:"Junior secondary",lv_high:"Senior secondary",term:"Term",saved:"Saved",passed:"Passed",failed:"Failed"},
+ar:{login:"تسجيل الدخول",id:"المعرّف",pw:"كلمة المرور",go:"دخول",out:"خروج",bad:"المعرّف أو كلمة المرور غير صحيحة",noprof:"حساب غير مصرّح",susp:"المدرسة موقوفة",chk:"المعرّف (حروف/أرقام) والاسم وكلمة المرور (6+)",classes:"الأقسام",subjects:"المواد",students:"التلاميذ",grades:"الدرجات",report:"كشف النقاط",schools:"المدارس",add:"إضافة",name:"الاسم",coef:"المعامل",cls:"القسم",subj:"المادة",stu:"التلميذ",avg:"المعدل",print:"طباعة",choose:"اختر",none:"لا توجد بيانات",note:"الدرجة",sname:"اسم المدرسة",on:"نشطة",off:"موقوفة",tog:"إيقاف/تفعيل",load:"جاري التحميل…",settings:"الإعدادات",save:"حفظ",gmax:"الدرجة القصوى",pass:"درجة النجاح",terms:"عدد الفترات",curr:"العملة",level:"المستوى",lv_kg:"الروضة",lv_pri:"الابتدائي",lv_mid:"الإعدادي",lv_high:"الثانوي",term:"الفترة",saved:"تم الحفظ",passed:"ناجح",failed:"راسب"}};
 let lang='fr',user=null,tab='classes',sel={},err='',D={schools:[],classes:[],subjects:[],students:[]},G={};
 try{lang=localStorage.getItem('gs_lang')||'fr'}catch(e){}
 const t=k=>T[lang][k]||k;
@@ -52,7 +52,7 @@ function setLang(l){lang=l;try{localStorage.setItem('gs_lang',l)}catch(e){}rende
 async function load(){
  const r=await Promise.all(['schools','classes','subjects','students','grades'].map(k=>sb.from(k).select('*').order(k=='schools'?'created_at':'name',{ascending:true})));
  ['schools','classes','subjects','students'].forEach((k,i)=>D[k]=r[i].data||[]);
- G={};(r[4].data||[]).forEach(g=>{if(g.term==1)G[g.student_id+'_'+g.subject_id]=g.value})}
+ G={};(r[4].data||[]).forEach(g=>{G[g.student_id+'_'+g.subject_id+'_'+g.term]=g.value})}
 async function login(){
  const i=$('i').value.trim(),p=$('p').value,email=i.includes('@')?i:i.toLowerCase()+DOM;
  const {error}=await sb.auth.signInWithPassword({email,password:p});
@@ -74,7 +74,7 @@ function pick(k,v){sel[k]=v;render()}
 async function run(p){const r=await p;if(r.error)alert(r.error.message);await load();render()}
 const ins=(k,o)=>run(sb.from(k).insert({...o,school_id:user.sid}));
 const del=(k,id)=>run(sb.from(k).delete().eq('id',id));
-function addClass(){const n=$('n').value.trim();if(n)ins('classes',{name:n})}
+function addClass(){const n=$('n').value.trim();if(n)ins('classes',{name:n,level:$('lv').value||null})}
 function addSubj(){const n=$('n').value.trim(),c=$('c').value;if(n&&c)ins('subjects',{name:n,class_id:c,coef:+$('f').value||1})}
 function addStu(){const n=$('n').value.trim(),c=$('c').value;if(n&&c)ins('students',{name:n,class_id:c})}
 async function addSchool(){
@@ -89,28 +89,34 @@ async function addSchool(){
 const toggle=(id,a)=>run(sb.from('schools').update({active:!a}).eq('id',id));
 const delSchool=id=>{if(confirm('?'))del('schools',id)};
 async function setGrade(e,s,v){
- const k=e+'_'+s;
- if(v===''){delete G[k];await sb.from('grades').delete().eq('student_id',e).eq('subject_id',s).eq('term',1)}
- else{const x=Math.max(0,Math.min(20,+v));G[k]=x;const {error}=await sb.from('grades').upsert({school_id:user.sid,student_id:e,subject_id:s,term:1,value:x},{onConflict:'student_id,subject_id,term'});if(error)alert(error.message)}}
+ const tm=sel.term||1,k=e+'_'+s+'_'+tm;
+ if(v===''){delete G[k];await sb.from('grades').delete().eq('student_id',e).eq('subject_id',s).eq('term',tm)}
+ else{const x=Math.max(0,Math.min(SC().grade_max||20,+v));G[k]=x;const {error}=await sb.from('grades').upsert({school_id:user.sid,student_id:e,subject_id:s,term:tm,value:x},{onConflict:'student_id,subject_id,term'});if(error)alert(error.message)}}
 function list(k,f){const a=D[k];return a.length?a.map(x=>`<div class="li"><span>${f(x)}</span><button class="x" onclick="del('${k}','${x.id}')">✕</button></div>`).join(''):`<p class="mu">${t('none')}</p>`}
 const classSel=()=>`<select id="c">${opts(D.classes)}</select>`;
+const SC=()=>D.schools[0]||{grade_max:20,pass_mark:10,terms:3,currency:''};
+const lvl=k=>k?t('lv_'+k):'';
+const termSel=()=>{const n=SC().terms||1;return n>1?`<select onchange="pick('term',+this.value)">${Array.from({length:n},(_,i)=>`<option value="${i+1}" ${(sel.term||1)==i+1?'selected':''}>${t('term')} ${i+1}</option>`).join('')}</select>`:''};
+async function saveSettings(){const o={name:$('sn').value.trim(),grade_max:+$('gm').value||20,pass_mark:+$('pm').value||10,terms:Math.max(1,Math.min(6,+$('tm').value||3)),currency:$('cu').value.trim()};
+ if(!o.name)return;const {error}=await sb.from('schools').update(o).eq('id',user.sid);if(error)return alert(error.message);user.name=o.name;await load();render();alert(t('saved'))}
 function view(){
  if(user.admin)return `<div class="card"><div class="row"><input id="si" placeholder="${t('id')}" autocapitalize="off"><input id="n" placeholder="${t('sname')}"><input id="sp" placeholder="${t('pw')}"></div><button class="btn" onclick="addSchool()">${t('add')}</button></div><div class="card">${D.schools.map(s=>`<div class="li"><span><b>${esc(s.name)}</b><br><span class="mu">${esc(s.identifier)} · ${s.active?t('on'):t('off')}</span></span><span><button onclick="toggle('${s.id}',${s.active})">${t('tog')}</button><button class="x" onclick="delSchool('${s.id}')">✕</button></span></div>`).join('')||`<p class="mu">${t('none')}</p>`}</div>`;
  const C=D.classes;
- if(tab=='classes')return `<div class="card"><div class="row"><input id="n" placeholder="${t('name')}"><button class="btn" onclick="addClass()">${t('add')}</button></div>${list('classes',x=>esc(x.name))}</div>`;
+ if(tab=='settings'){const s=SC();return `<div class="card"><label class="mu">${t('sname')}</label><div class="row"><input id="sn" value="${esc(s.name||'')}"></div><label class="mu">${t('gmax')}</label><div class="row"><input id="gm" type="number" value="${s.grade_max}"></div><label class="mu">${t('pass')}</label><div class="row"><input id="pm" type="number" step="0.5" value="${s.pass_mark}"></div><label class="mu">${t('terms')}</label><div class="row"><input id="tm" type="number" min="1" max="6" value="${s.terms}"></div><label class="mu">${t('curr')}</label><div class="row"><input id="cu" value="${esc(s.currency||'')}"></div><button class="btn" onclick="saveSettings()">${t('save')}</button></div>`}
+ if(tab=='classes')return `<div class="card"><div class="row"><input id="n" placeholder="${t('name')}"><select id="lv"><option value="">${t('level')}</option>${['kg','pri','mid','high'].map(k=>`<option value="${k}">${lvl(k)}</option>`).join('')}</select><button class="btn" onclick="addClass()">${t('add')}</button></div>${list('classes',x=>esc(x.name)+` <span class="mu">${lvl(x.level)}</span>`)}</div>`;
  if(tab=='subjects')return `<div class="card"><div class="row">${classSel()}<input id="n" placeholder="${t('name')}"><input id="f" type="number" min="1" placeholder="${t('coef')}"></div><button class="btn" onclick="addSubj()">${t('add')}</button>${list('subjects',x=>`${esc(x.name)} <span class="mu">(${esc(nm(C,x.class_id))} · ×${x.coef})</span>`)}</div>`;
  if(tab=='students')return `<div class="card"><div class="row">${classSel()}<input id="n" placeholder="${t('name')}"></div><button class="btn" onclick="addStu()">${t('add')}</button>${list('students',x=>`${esc(x.name)} <span class="mu">(${esc(nm(C,x.class_id))})</span>`)}</div>`;
  const S=D.subjects.filter(x=>x.class_id==sel.c),E=D.students.filter(x=>x.class_id==sel.c);
- if(tab=='grades')return `<div class="card"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('s',this.value)">${opts(S,sel.s)}</select></div>${sel.s?E.map(e=>`<div class="li"><span>${esc(e.name)}</span><input type="number" min="0" max="20" step="0.25" style="width:90px;flex:none" value="${G[e.id+'_'+sel.s]??''}" onchange="setGrade('${e.id}','${sel.s}',this.value)"></div>`).join('')||`<p class="mu">${t('none')}</p>`:''}</div>`;
+ if(tab=='grades')return `<div class="card"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('s',this.value)">${opts(S,sel.s)}</select>${termSel()}</div>${sel.s?E.map(e=>`<div class="li"><span>${esc(e.name)}</span><input type="number" min="0" max="${SC().grade_max||20}" step="0.25" style="width:90px;flex:none" value="${G[e.id+'_'+sel.s+'_'+(sel.term||1)]??''}" onchange="setGrade('${e.id}','${sel.s}',this.value)"></div>`).join('')||`<p class="mu">${t('none')}</p>`:''}</div>`;
  let r='';
- if(sel.e){let tw=0,tc=0;const rows=S.map(s=>{const g=G[sel.e+'_'+s.id];if(g!=null){tw+=g*s.coef;tc+=+s.coef}return `<tr><td>${esc(s.name)}</td><td>${s.coef}</td><td>${g??'-'}</td></tr>`}).join('');
-  r=`<div class="card"><h3>${esc(user.name)}</h3><p>${esc(nm(E,sel.e))} — ${esc(nm(C,sel.c))}</p><table><tr><th>${t('subj')}</th><th>${t('coef')}</th><th>${t('note')}</th></tr>${rows}</table><h3>${t('avg')}: ${tc?(tw/tc).toFixed(2):'-'} / 20</h3><button class="btn noprint" onclick="window.print()">${t('print')}</button></div>`}
- return `<div class="card noprint"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(E,sel.e)}</select></div></div>`+r}
+ if(sel.e){let tw=0,tc=0;const rows=S.map(s=>{const g=G[sel.e+'_'+s.id+'_'+(sel.term||1)];if(g!=null){tw+=g*s.coef;tc+=+s.coef}return `<tr><td>${esc(s.name)}</td><td>${s.coef}</td><td>${g??'-'}</td></tr>`}).join('');
+  r=`<div class="card"><h3>${esc(user.name)}</h3><p>${esc(nm(E,sel.e))} — ${esc(nm(C,sel.c))}</p><table><tr><th>${t('subj')}</th><th>${t('coef')}</th><th>${t('note')}</th></tr>${rows}</table><h3>${t('avg')}: ${tc?(tw/tc).toFixed(2):'-'} / ${SC().grade_max||20}${tc?` — ${tw/tc>=(SC().pass_mark||10)?t('passed'):t('failed')}`:''}</h3><button class="btn noprint" onclick="window.print()">${t('print')}</button></div>`}
+ return `<div class="card noprint"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(E,sel.e)}</select>${termSel()}</div></div>`+r}
 function render(){
  document.documentElement.lang=lang;document.documentElement.dir=lang=='ar'?'rtl':'ltr';$('lg').value=lang;
  $('who').innerHTML=user?`<button class="x" style="color:#fff" onclick="logout()">${t('out')}</button>`:'';
  if(!user){$('app').innerHTML=`<div class="card"><h2>${t('login')}</h2><div class="row"><input id="i" placeholder="${t('id')}" autocapitalize="off"></div><div class="row"><input id="p" type="password" placeholder="${t('pw')}"></div><button class="btn" onclick="login()">${t('go')}</button><p class="err">${err}</p></div>`;return}
- const tabs=user.admin?['schools']:['classes','subjects','students','grades','report'];
+ const tabs=user.admin?['schools']:['classes','subjects','students','grades','report',...(user.role=='school_admin'?['settings']:[])];
  $('app').innerHTML=`<div class="tabs">${tabs.map(x=>`<button class="${x==tab?'on':''}" onclick="go('${x}')">${t(x)}</button>`).join('')}</div>`+view()}
 render();boot();
 </script>
