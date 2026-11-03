@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gandal Écoles</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--tx:#1b2430;--mu:#6b7785;--pr:#1f7ae0;--bd:#d9e1ec;--rd:#d9534f}
+@media(prefers-color-scheme:dark){:root{--bg:#121821;--card:#1b2430;--tx:#e8edf3;--mu:#97a3b2;--pr:#4d9bf0;--bd:#2c3748}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:var(--pr);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+select,input,button{font:inherit;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);max-width:100%}
+header select{padding:6px}
+main{padding:12px;max-width:720px;margin:auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:12px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px}
+.tabs button{white-space:nowrap}
+.tabs .on{background:var(--pr);color:#fff;border-color:var(--pr)}
+.btn{background:var(--pr);color:#fff;border-color:var(--pr);cursor:pointer}
+.x{background:none;color:var(--rd);border:0;padding:4px 10px;cursor:pointer}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.row>*{flex:1 1 120px}
+.li{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);padding:6px 0;gap:8px}
+.mu{color:var(--mu);font-size:13px}
+table{width:100%;border-collapse:collapse}
+td,th{border-bottom:1px solid var(--bd);padding:6px;text-align:start}
+.err{color:var(--rd)}
+@media print{header,.tabs,.noprint{display:none!important}.card{border:0}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<header><b>Gandal Écoles</b><span><span id="who"></span> <select id="lg" onchange="setLang(this.value)"><option value="fr">Français</option><option value="en">English</option><option value="ar">العربية</option></select></span></header>
+<main id="app"></main>
+<script>
+const SB_URL='https://uiwjyqokxqjfajuphrul.supabase.co',SB_KEY='sb_publishable_BIAytpdQ5xAe_XimGXLnYw_LnBrfNct',DOM='@ecoles.gandal.app';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const sb2=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'gs-tmp'}});
+const T={
+fr:{login:"Connexion",id:"Identifiant",pw:"Mot de passe",go:"Se connecter",out:"Déconnexion",bad:"Identifiant ou mot de passe incorrect",noprof:"Compte non autorisé",susp:"École suspendue",chk:"Identifiant (lettres/chiffres), nom, mot de passe (6+)",classes:"Classes",subjects:"Matières",students:"Élèves",grades:"Notes",report:"Bulletin",schools:"Écoles",add:"Ajouter",name:"Nom",coef:"Coefficient",cls:"Classe",subj:"Matière",stu:"Élève",avg:"Moyenne",print:"Imprimer",choose:"Choisir",none:"Aucune donnée",note:"Note",sname:"Nom de l’école",on:"Actif",off:"Suspendu",tog:"Suspendre/Activer",load:"Chargement…"},
+en:{login:"Login",id:"Identifier",pw:"Password",go:"Log in",out:"Log out",bad:"Wrong identifier or password",noprof:"Account not authorized",susp:"School suspended",chk:"Identifier (letters/digits), name, password (6+)",classes:"Classes",subjects:"Subjects",students:"Students",grades:"Grades",report:"Report card",schools:"Schools",add:"Add",name:"Name",coef:"Coefficient",cls:"Class",subj:"Subject",stu:"Student",avg:"Average",print:"Print",choose:"Choose",none:"No data",note:"Grade",sname:"School name",on:"Active",off:"Suspended",tog:"Suspend/Activate",load:"Loading…"},
+ar:{login:"تسجيل الدخول",id:"المعرّف",pw:"كلمة المرور",go:"دخول",out:"خروج",bad:"المعرّف أو كلمة المرور غير صحيحة",noprof:"حساب غير مصرّح",susp:"المدرسة موقوفة",chk:"المعرّف (حروف/أرقام) والاسم وكلمة المرور (6+)",classes:"الأقسام",subjects:"المواد",students:"التلاميذ",grades:"الدرجات",report:"كشف النقاط",schools:"المدارس",add:"إضافة",name:"الاسم",coef:"المعامل",cls:"القسم",subj:"المادة",stu:"التلميذ",avg:"المعدل",print:"طباعة",choose:"اختر",none:"لا توجد بيانات",note:"الدرجة",sname:"اسم المدرسة",on:"نشطة",off:"موقوفة",tog:"إيقاف/تفعيل",load:"جاري التحميل…"}};
+let lang='fr',user=null,tab='classes',sel={},err='',D={schools:[],classes:[],subjects:[],students:[]},G={};
+try{lang=localStorage.getItem('gs_lang')||'fr'}catch(e){}
+const t=k=>T[lang][k]||k;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=i=>document.getElementById(i);
+const opts=(a,v)=>`<option value="">${t('choose')}</option>`+a.map(x=>`<option value="${x.id}" ${x.id==v?'selected':''}>${esc(x.name)}</option>`).join('');
+const nm=(a,id)=>(a.find(x=>x.id==id)||{}).name||'';
+function setLang(l){lang=l;try{localStorage.setItem('gs_lang',l)}catch(e){}render()}
+async function load(){
+ const r=await Promise.all(['schools','classes','subjects','students','grades'].map(k=>sb.from(k).select('*').order(k=='schools'?'created_at':'name',{ascending:true})));
+ ['schools','classes','subjects','students'].forEach((k,i)=>D[k]=r[i].data||[]);
+ G={};(r[4].data||[]).forEach(g=>{if(g.term==1)G[g.student_id+'_'+g.subject_id]=g.value})}
+async function login(){
+ const i=$('i').value.trim(),p=$('p').value,email=i.includes('@')?i:i.toLowerCase()+DOM;
+ const {error}=await sb.auth.signInWithPassword({email,password:p});
+ if(error){err=t('bad');return render()}
+ err='';await boot()}
+async function boot(){
+ $('app').innerHTML=`<p class="mu">${t('load')}</p>`;
+ const {data:{session}}=await sb.auth.getSession();
+ if(!session){user=null;return render()}
+ const {data:pr}=await sb.from('profiles').select('role,school_id').eq('user_id',session.user.id).maybeSingle();
+ if(!pr){await sb.auth.signOut();err=t('noprof');user=null;return render()}
+ user={role:pr.role,sid:pr.school_id,admin:pr.role=='superadmin'};
+ if(user.sid){const {data:s}=await sb.from('schools').select('name').eq('id',user.sid).maybeSingle();
+  if(!s){await sb.auth.signOut();err=t('susp');user=null;return render()}user.name=s.name}
+ tab=user.admin?'schools':'classes';await load();render()}
+async function logout(){await sb.auth.signOut();user=null;sel={};render()}
+function go(x){tab=x;sel={};render()}
+function pick(k,v){sel[k]=v;render()}
+async function run(p){const r=await p;if(r.error)alert(r.error.message);await load();render()}
+const ins=(k,o)=>run(sb.from(k).insert({...o,school_id:user.sid}));
+const del=(k,id)=>run(sb.from(k).delete().eq('id',id));
+function addClass(){const n=$('n').value.trim();if(n)ins('classes',{name:n})}
+function addSubj(){const n=$('n').value.trim(),c=$('c').value;if(n&&c)ins('subjects',{name:n,class_id:c,coef:+$('f').value||1})}
+function addStu(){const n=$('n').value.trim(),c=$('c').value;if(n&&c)ins('students',{name:n,class_id:c})}
+async function addSchool(){
+ const i=$('si').value.trim().toLowerCase(),n=$('n').value.trim(),p=$('sp').value;
+ if(!/^[a-z0-9._-]+$/.test(i)||!n||p.length<6)return alert(t('chk'));
+ const {data:s,error}=await sb.from('schools').insert({identifier:i,name:n}).select().single();
+ if(error)return alert(error.message);
+ const {data:u,error:e2}=await sb2.auth.signUp({email:i+DOM,password:p});
+ if(e2||!u.user){await sb.from('schools').delete().eq('id',s.id);return alert(e2?e2.message:'Error')}
+ const {error:e3}=await sb.from('profiles').insert({user_id:u.user.id,school_id:s.id,role:'school_admin'});
+ if(e3)alert(e3.message);await load();render()}
+const toggle=(id,a)=>run(sb.from('schools').update({active:!a}).eq('id',id));
+const delSchool=id=>{if(confirm('?'))del('schools',id)};
+async function setGrade(e,s,v){
+ const k=e+'_'+s;
+ if(v===''){delete G[k];await sb.from('grades').delete().eq('student_id',e).eq('subject_id',s).eq('term',1)}
+ else{const x=Math.max(0,Math.min(20,+v));G[k]=x;const {error}=await sb.from('grades').upsert({school_id:user.sid,student_id:e,subject_id:s,term:1,value:x},{onConflict:'student_id,subject_id,term'});if(error)alert(error.message)}}
+function list(k,f){const a=D[k];return a.length?a.map(x=>`<div class="li"><span>${f(x)}</span><button class="x" onclick="del('${k}','${x.id}')">✕</button></div>`).join(''):`<p class="mu">${t('none')}</p>`}
+const classSel=()=>`<select id="c">${opts(D.classes)}</select>`;
+function view(){
+ if(user.admin)return `<div class="card"><div class="row"><input id="si" placeholder="${t('id')}" autocapitalize="off"><input id="n" placeholder="${t('sname')}"><input id="sp" placeholder="${t('pw')}"></div><button class="btn" onclick="addSchool()">${t('add')}</button></div><div class="card">${D.schools.map(s=>`<div class="li"><span><b>${esc(s.name)}</b><br><span class="mu">${esc(s.identifier)} · ${s.active?t('on'):t('off')}</span></span><span><button onclick="toggle('${s.id}',${s.active})">${t('tog')}</button><button class="x" onclick="delSchool('${s.id}')">✕</button></span></div>`).join('')||`<p class="mu">${t('none')}</p>`}</div>`;
+ const C=D.classes;
+ if(tab=='classes')return `<div class="card"><div class="row"><input id="n" placeholder="${t('name')}"><button class="btn" onclick="addClass()">${t('add')}</button></div>${list('classes',x=>esc(x.name))}</div>`;
+ if(tab=='subjects')return `<div class="card"><div class="row">${classSel()}<input id="n" placeholder="${t('name')}"><input id="f" type="number" min="1" placeholder="${t('coef')}"></div><button class="btn" onclick="addSubj()">${t('add')}</button>${list('subjects',x=>`${esc(x.name)} <span class="mu">(${esc(nm(C,x.class_id))} · ×${x.coef})</span>`)}</div>`;
+ if(tab=='students')return `<div class="card"><div class="row">${classSel()}<input id="n" placeholder="${t('name')}"></div><button class="btn" onclick="addStu()">${t('add')}</button>${list('students',x=>`${esc(x.name)} <span class="mu">(${esc(nm(C,x.class_id))})</span>`)}</div>`;
+ const S=D.subjects.filter(x=>x.class_id==sel.c),E=D.students.filter(x=>x.class_id==sel.c);
+ if(tab=='grades')return `<div class="card"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('s',this.value)">${opts(S,sel.s)}</select></div>${sel.s?E.map(e=>`<div class="li"><span>${esc(e.name)}</span><input type="number" min="0" max="20" step="0.25" style="width:90px;flex:none" value="${G[e.id+'_'+sel.s]??''}" onchange="setGrade('${e.id}','${sel.s}',this.value)"></div>`).join('')||`<p class="mu">${t('none')}</p>`:''}</div>`;
+ let r='';
+ if(sel.e){let tw=0,tc=0;const rows=S.map(s=>{const g=G[sel.e+'_'+s.id];if(g!=null){tw+=g*s.coef;tc+=+s.coef}return `<tr><td>${esc(s.name)}</td><td>${s.coef}</td><td>${g??'-'}</td></tr>`}).join('');
+  r=`<div class="card"><h3>${esc(user.name)}</h3><p>${esc(nm(E,sel.e))} — ${esc(nm(C,sel.c))}</p><table><tr><th>${t('subj')}</th><th>${t('coef')}</th><th>${t('note')}</th></tr>${rows}</table><h3>${t('avg')}: ${tc?(tw/tc).toFixed(2):'-'} / 20</h3><button class="btn noprint" onclick="window.print()">${t('print')}</button></div>`}
+ return `<div class="card noprint"><div class="row"><select onchange="pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(E,sel.e)}</select></div></div>`+r}
+function render(){
+ document.documentElement.lang=lang;document.documentElement.dir=lang=='ar'?'rtl':'ltr';$('lg').value=lang;
+ $('who').innerHTML=user?`<button class="x" style="color:#fff" onclick="logout()">${t('out')}</button>`:'';
+ if(!user){$('app').innerHTML=`<div class="card"><h2>${t('login')}</h2><div class="row"><input id="i" placeholder="${t('id')}" autocapitalize="off"></div><div class="row"><input id="p" type="password" placeholder="${t('pw')}"></div><button class="btn" onclick="login()">${t('go')}</button><p class="err">${err}</p></div>`;return}
+ const tabs=user.admin?['schools']:['classes','subjects','students','grades','report'];
+ $('app').innerHTML=`<div class="tabs">${tabs.map(x=>`<button class="${x==tab?'on':''}" onclick="go('${x}')">${t(x)}</button>`).join('')}</div>`+view()}
+render();boot();
+</script>
+</body>
+</html>
