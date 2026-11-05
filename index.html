@@ -43,7 +43,7 @@ header select{width:auto;min-height:0;padding:5px;color:#000}
 .ic{display:block;font-size:1.6rem}
 table{width:100%;border-collapse:collapse}
 td,th{border-bottom:1px solid var(--bd);padding:6px;text-align:start}
-.err{color:var(--rd)}.mt td,.mt th{padding:3px}.mt input{min-height:38px;padding:6px}
+.err{color:var(--rd)}.mt td,.mt th{padding:3px}.bhead{display:flex;gap:12px;align-items:center;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:8px}.bhead img{max-height:72px;max-width:96px}.mt input{min-height:38px;padding:6px}
 .bad{border-color:var(--rd)!important;background:#fdd!important;color:#900!important}
 .hidden{display:none!important}
 .acc-btn{display:flex;justify-content:space-between;width:100%;min-height:50px;background:var(--ink);color:#fff;border:0;border-radius:8px;padding:12px 14px;font-weight:700;margin-top:10px;cursor:pointer}
@@ -85,7 +85,7 @@ const T={
 fr:{login:"Connexion",id:"Identifiant",pw:"Mot de passe",go:"Se connecter",out:"Déconnexion",bad:"Identifiant ou mot de passe incorrect",noprof:"Compte non autorisé",susp:"École suspendue",chk:"Identifiant (lettres/chiffres), nom, mot de passe (6+)",classes:"Classes",subjects:"Matières",students:"Élèves",grades:"Notes",report:"Bulletin",schools:"Écoles",add:"Ajouter",name:"Nom",coef:"Coefficient",cls:"Classe",subj:"Matière",avg:"Moyenne",print:"Imprimer",choose:"Choisir",none:"Aucune donnée",note:"Note",sname:"Nom de l’école",on:"Actif",off:"Suspendu",tog:"Suspendre/Activer",load:"Chargement…",settings:"Structure des notes",save:"Enregistrer",gmax:"Note maximale",pass:"Moyenne de passage",terms:"Nombre de périodes",curr:"Monnaie",level:"Niveau",term:"Période",saved:"Enregistré",passed:"Admis",failed:"Non admis",staff:"Personnels",personnels:"Personnels",users:"Utilisateurs",fname:"Nom complet",uname:"Nom d’utilisateur",r_teacher:"Enseignant",r_accountant:"Comptable",r_it:"Informaticien",r_parent:"Parent",matr:"Matricule",chk2:"Nom, utilisateur (lettres/chiffres) et mot de passe (6+) requis",nomat:"Matricule introuvable",fees:"Frais",soon:"Bientôt disponible",hint:"Personnel/parents : utilisateur@école (ex. prof1@ecole1)",levels:"Niveaux",yes:"Oui",no:"Non",delq:"Supprimer",also:"Cela supprimera aussi :",andgr:"toutes les notes liées"},
 en:{login:"Login",id:"Identifier",pw:"Password",go:"Log in",out:"Log out",bad:"Wrong identifier or password",noprof:"Account not authorized",susp:"School suspended",chk:"Identifier (letters/digits), name, password (6+)",classes:"Classes",subjects:"Subjects",students:"Students",grades:"Grades",report:"Report card",schools:"Schools",add:"Add",name:"Name",coef:"Coefficient",cls:"Class",subj:"Subject",avg:"Average",print:"Print",choose:"Choose",none:"No data",note:"Grade",sname:"School name",on:"Active",off:"Suspended",tog:"Suspend/Activate",load:"Loading…",settings:"Grading structure",save:"Save",gmax:"Maximum grade",pass:"Pass mark",terms:"Number of terms",curr:"Currency",level:"Level",term:"Term",saved:"Saved",passed:"Passed",failed:"Failed",staff:"Staff",personnels:"Staff",users:"Users",fname:"Full name",uname:"Username",r_teacher:"Teacher",r_accountant:"Accountant",r_it:"IT officer",r_parent:"Parent",matr:"Student ID",chk2:"Name, username (letters/digits) and password (6+) required",nomat:"Student ID not found",fees:"Fees",soon:"Coming soon",hint:"Staff/parents: username@school (e.g. teacher1@ecole1)",levels:"Levels",yes:"Yes",no:"No",delq:"Delete",also:"This will also delete:",andgr:"all related grades"},
 ar:{login:"تسجيل الدخول",id:"المعرّف",pw:"كلمة المرور",go:"دخول",out:"خروج",bad:"المعرّف أو كلمة المرور غير صحيحة",noprof:"حساب غير مصرّح",susp:"المدرسة موقوفة",chk:"المعرّف (حروف/أرقام) والاسم وكلمة المرور (6+)",classes:"الأقسام",subjects:"المواد",students:"التلاميذ",grades:"الدرجات",report:"كشف النقاط",schools:"المدارس",add:"إضافة",name:"الاسم",coef:"المعامل",cls:"القسم",subj:"المادة",avg:"المعدل",print:"طباعة",choose:"اختر",none:"لا توجد بيانات",note:"الدرجة",sname:"اسم المدرسة",on:"نشطة",off:"موقوفة",tog:"إيقاف/تفعيل",load:"جاري التحميل…",settings:"هيكل النقاط",save:"حفظ",gmax:"الدرجة القصوى",pass:"درجة النجاح",terms:"عدد الفترات",curr:"العملة",level:"المرحلة",term:"الفترة",saved:"تم الحفظ",passed:"ناجح",failed:"راسب",staff:"الموظفون",personnels:"الموظفون",users:"المستخدمون",fname:"الاسم الكامل",uname:"اسم المستخدم",r_teacher:"معلم",r_accountant:"محاسب",r_it:"مسؤول المعلوماتية",r_parent:"ولي الأمر",matr:"رقم التسجيل",chk2:"الاسم واسم المستخدم (حروف/أرقام) وكلمة المرور (6+) مطلوبة",nomat:"رقم التسجيل غير موجود",fees:"الرسوم",soon:"قريبًا",hint:"الموظفون/أولياء الأمور: المستخدم@المدرسة (مثال teacher1@ecole1)",levels:"المراحل",yes:"نعم",no:"لا",delq:"حذف",also:"سيتم أيضًا حذف:",andgr:"جميع الدرجات المرتبطة"}};
-let lang='fr',user=null,tab='home',sel={},err='',D={schools:[],levels:[],classes:[],subjects:[],students:[],staff:[],years:[],grading:[],personnel:[]},G={},curPhoto='',photoDirty=false;
+let lang='fr',user=null,tab='home',sel={},err='',D={schools:[],levels:[],classes:[],subjects:[],students:[],staff:[],years:[],grading:[],personnel:[],ts:[]},G={},curPhoto='',photoDirty=false;
 try{lang=localStorage.getItem('gs_lang')||'fr'}catch(e){}
 const t=k=>T[lang][k]||k;
 const Z=(a,b,c)=>({fr:a,en:b,ar:c})[lang];
@@ -112,9 +112,9 @@ const note=x=>dlg(x,{info:1}),ask=x=>dlg(x);
 async function load(){
  const SCOLS='id,school_id,class_id,name,nom,prenom,matricule,year,birth_date,birth_place,mother_tongue,sex,enroll_date,status,origin_school,repeater,reduction,reduction_reason,dropped,father,mother,guardian,emergency,docs,history';
  const q=(k,o,c)=>{const r=sb.from(k).select(c||'*');return o?r.order(o,{ascending:true}):r};
- const r=await Promise.all([q('schools','created_at'),q('levels','name'),q('classes','name'),q('subjects','name'),q('students','name',SCOLS),q('grades'),q('profiles'),q('school_years','name'),q('grading'),q('personnel','last_name')]);
+ const r=await Promise.all([q('schools','created_at'),q('levels','name'),q('classes','name'),q('subjects','name'),q('students','name',SCOLS),q('grades'),q('profiles'),q('school_years','name'),q('grading'),q('personnel','last_name'),q('teacher_subjects')]);
  const e=r.find(z=>z.error);if(e)note(e.error.message);
- D.schools=r[0].data||[];D.levels=r[1].data||[];D.classes=r[2].data||[];D.subjects=r[3].data||[];D.students=r[4].data||[];D.years=r[7].data||[];D.grading=r[8].data||[];D.personnel=r[9].data||[];
+ D.schools=r[0].data||[];D.levels=r[1].data||[];D.classes=r[2].data||[];D.subjects=r[3].data||[];D.students=r[4].data||[];D.years=r[7].data||[];D.grading=r[8].data||[];D.personnel=r[9].data||[];D.ts=r[10].data||[];
  D.staff=(r[6].data||[]).filter(p=>!['school_admin','superadmin'].includes(p.role));
  G={};(r[5].data||[]).forEach(g=>{G[g.student_id+'_'+g.subject_id+'_'+g.term+'_'+g.test]=g.value})}
 async function login(){
@@ -134,10 +134,10 @@ async function boot(){
  tab=user.admin?'schools':({school_admin:'home',teacher:'grades',it:'levels',accountant:'fees',parent:'report'}[user.role]||'home');
  await load();
  if(user.role=='parent'){const s0=D.students[0]||{};sel={c:s0.class_id,e:s0.id}}
- if(user.role=='teacher'){const j0=D.subjects[0]||{};sel={c:j0.class_id,s:j0.id}}
+ 
  render()}
 async function logout(){await sb.auth.signOut();user=null;sel={};render()}
-function go(x){tab=x;GS=null;if(!['parent','teacher'].includes(user.role))sel={};render();window.scrollTo(0,0)}
+function go(x){tab=x;GS=null;if(user.role!='parent')sel={};render();window.scrollTo(0,0)}
 function pick(k,v){sel[k]=v;render()}
 function closeSheet(){$('sheet').classList.remove('show');$('sheet-bg').classList.remove('show')}
 function openSheet(m){const it=MENUS[m].filter(i=>(ALLOW[user.role]||[]).includes(i));
@@ -353,27 +353,37 @@ async function saveStudent(){
 /* ---- staff ---- */
 function roleCh(){const r=$('rl').value;$('sb').style.display=r=='parent'?'none':'';$('tb').style.display=r=='teacher'?'':'none';$('pb').style.display=r=='parent'?'':'none'}
 function pidCh(){const p=D.personnel.find(x=>x.id==$('pid').value);$('pnm').value=p?p.first_name+' '+p.last_name:''}
-function fillC(){const l=$('tl').value;$('tc').innerHTML=`<option value="">${t('cls')}</option>`+D.classes.filter(c=>c.level_id==l).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');fillS()}
-function fillS(){const c=$('tc').value;$('ts').innerHTML=`<option value="">${t('subj')}</option>`+D.subjects.filter(x=>x.class_id==c).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}
+function tsList(chk){const L=D.subjects.map(s=>{const c=D.classes.find(c=>c.id==s.class_id)||{};return {s,c,lv:nm(D.levels,c.level_id)}}).sort((a,b)=>(a.lv||'').localeCompare(b.lv||'')||(a.c.name||'').localeCompare(b.c.name||'')||a.s.name.localeCompare(b.s.name));
+ return `<select id="tf" onchange="tsFilter()"><option value="">${Z('Toutes les classes','All classes','كل الأقسام')}</option>${D.classes.map(cl).sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select><button class="btn alt small" type="button" style="margin:8px 0" onclick="tsAll()">${Z('Tout cocher (liste affichée)','Check all (shown list)','تحديد الكل (القائمة المعروضة)')}</button>`+(L.map(x=>`<label class="chk" data-c="${x.s.class_id}"><input type="checkbox" class="tsc" value="${x.s.id}" ${chk.includes(x.s.id)?'checked':''}>${esc(x.s.name)} (${esc(x.lv||'—')} • ${esc(x.c.name||'?')} • x${x.s.coef})</label>`).join('')||`<p class="hint">${t('none')}</p>`)}
+function tsFilter(){const f=$('tf').value;document.querySelectorAll('.chk[data-c]').forEach(e=>e.classList.toggle('hidden',!!f&&e.dataset.c!=f))}
+function tsAll(){document.querySelectorAll('.chk[data-c]:not(.hidden) .tsc').forEach(e=>{e.checked=true})}
+const tsPicked=()=>[...document.querySelectorAll('.tsc:checked')].map(e=>e.value);
+async function saveTs(){const uid=sel.ut,ids=tsPicked();if(!ids.length)return note(Z('Cochez au moins une matière.','Tick at least one subject.','حدد مادة واحدة على الأقل.'));
+ let r=await sb.from('teacher_subjects').delete().eq('user_id',uid);if(r.error)return note(r.error.message);
+ r=await sb.from('teacher_subjects').insert(ids.map(id=>({school_id:user.sid,user_id:uid,subject_id:id})));if(r.error)return note(r.error.message);
+ sel.ut=null;await load();render();window.scrollTo(0,0);note(t('saved'))}
 async function addStaff(){
- const role=$('rl').value,us=$('us').value.trim().toLowerCase(),pw=$('pw2').value,sj=$('ts').value;
+ const role=$('rl').value,us=$('us').value.trim().toLowerCase(),pw=$('pw2').value,sj=tsPicked();
  let fn='',pid=null,stu=null;
  if(role=='parent'){fn=$('fn').value.trim();if(!fn)return note(t('chk2'));const mt=$('mt').value.trim();stu=D.students.find(x=>x.matricule&&x.matricule.toLowerCase()==mt.toLowerCase());if(!stu)return note(t('nomat'))}
  else{const p=D.personnel.find(x=>x.id==$('pid').value);if(!p)return note(Z('Choisissez l’ID du personnel.','Choose the staff ID.','اختر رقم الموظف.'));pid=p.id;fn=p.first_name+' '+p.last_name}
  if(!/^[a-z0-9._-]+$/.test(us)||pw.length<6)return note(t('chk2'));
- if(role=='teacher'&&!sj)return note(t('subj'));
+ if(role=='teacher'&&!sj.length)return note(Z('Cochez au moins une matière.','Tick at least one subject.','حدد مادة واحدة على الأقل.'));
  const {data:u,error}=await sb2.auth.signUp({email:us+'+'+D.schools[0].identifier+DOM,password:pw});
  if(error||!u.user)return note(error?error.message:'Error');
- const {error:e3}=await sb.from('profiles').insert({user_id:u.user.id,school_id:user.sid,role,full_name:fn,username:us,student_id:stu?stu.id:null,subject_id:role=='teacher'?sj:null,personnel_id:pid});
- if(e3)return note(e3.message);await load();render()}
+ const {error:e3}=await sb.from('profiles').insert({user_id:u.user.id,school_id:user.sid,role,full_name:fn,username:us,student_id:stu?stu.id:null,personnel_id:pid});
+ if(e3)return note(e3.message);
+ if(role=='teacher'){const {error:e4}=await sb.from('teacher_subjects').insert(sj.map(id=>({school_id:user.sid,user_id:u.user.id,subject_id:id})));if(e4)note(e4.message)}
+ await load();render()}
 async function resetPw(uid){const pw=await dlg(t('pw')+' (6+)',{input:1});if(!pw)return;if(pw.length<6)return note(t('chk2'));const {error}=await sb.rpc('set_staff_password',{uid,pw});note(error?error.message:t('saved'))}
 async function delStaff(uid){const p=D.staff.find(x=>x.user_id==uid)||{};if(!await ask(`${t('delq')} « ${p.full_name||''} » ?`))return;const {error}=await sb.rpc('delete_staff',{uid});if(error)note(error.message);await load();render()}
 function staffView(){const roles=['teacher','accountant','it','parent'],sc=D.schools[0].identifier,avail=D.personnel.filter(p=>p.active&&!D.staff.some(u=>u.personnel_id==p.id));
+ if(sel.ut){const p=D.staff.find(x=>x.user_id==sel.ut)||{};return `<div class="card"><h2>${Z('Matières de','Subjects of','مواد')} ${esc(p.full_name||'')}</h2>${tsList(D.ts.filter(x=>x.user_id==sel.ut).map(x=>x.subject_id))}<div class="row2"><button class="btn alt" onclick="sel.ut=null;render()">${Z('Annuler','Cancel','إلغاء')}</button><button class="btn" onclick="saveTs()">${t('save')}</button></div></div>`}
  return `<div class="card"><label for="rl">${Z('Rôle','Role','الدور')}</label><select id="rl" onchange="roleCh()">${roles.map(r=>`<option value="${r}">${t('r_'+r)}</option>`).join('')}</select>
 <div id="sb"><label for="pid">${Z('ID du personnel','Staff ID','رقم الموظف')}</label><select id="pid" onchange="pidCh()"><option value="">—</option>${avail.map(p=>`<option value="${p.id}">${esc(p.staff_no||'?')}</option>`).join('')}</select><label for="pnm">${Z('Nom complet','Full name','الاسم الكامل')}</label><input id="pnm" readonly></div>
-<div id="tb"><div class="row" style="margin-top:8px"><select id="tl" onchange="fillC()"><option value="">${t('level')}</option>${D.levels.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join('')}</select><select id="tc" onchange="fillS()"><option value="">${t('cls')}</option></select><select id="ts"><option value="">${t('subj')}</option></select></div></div>
+<div id="tb"><div class="sub">${Z('Matières de l’enseignant','Teacher’s subjects','مواد المعلم')}</div>${tsList([])}</div>
 <div id="pb" style="display:none">${fl('fn',Z('Nom complet du parent','Parent full name','الاسم الكامل لولي الأمر'),'')}${fl('mt',t('matr'),'')}</div>
-${fl('us',t('uname'),'','autocapitalize="off"')}${fl('pw2',t('pw'),'')}<button class="btn" onclick="addStaff()">${t('add')}</button></div><div class="card">${D.staff.map(p=>{const pe=D.personnel.find(x=>x.id==p.personnel_id);return `<div class="li"><span><b>${esc(p.full_name||'')}</b> <span class="mu">${t('r_'+p.role)}</span><br><span class="mu">${pe?esc(pe.staff_no||'')+' · ':''}${esc(p.username||'')}@${esc(sc)}${p.student_id?' · '+esc(nm(D.students,p.student_id)):''}${p.subject_id?' · '+esc(nm(D.subjects,p.subject_id)):''}</span></span><span><button class="btn alt small" onclick="resetPw('${p.user_id}')">${t('pw')}</button><button class="x" onclick="delStaff('${p.user_id}')">✕</button></span></div>`}).join('')||`<p class="mu">${t('none')}</p>`}</div>`}
+${fl('us',t('uname'),'','autocapitalize="off"')}${fl('pw2',t('pw'),'')}<button class="btn" onclick="addStaff()">${t('add')}</button></div><div class="card">${D.staff.map(p=>{const pe=D.personnel.find(x=>x.id==p.personnel_id),n=D.ts.filter(x=>x.user_id==p.user_id).length;return `<div class="li"><span><b>${esc(p.full_name||'')}</b> <span class="mu">${t('r_'+p.role)}</span><br><span class="mu">${pe?esc(pe.staff_no||'')+' · ':''}${esc(p.username||'')}@${esc(sc)}${p.student_id?' · '+esc(nm(D.students,p.student_id)):''}${p.role=='teacher'?' · '+n+' '+t('subjects').toLowerCase():''}</span></span><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${p.role=='teacher'?`<button class="btn alt small" onclick="sel.ut='${p.user_id}';render();window.scrollTo(0,0)">${t('subjects')}</button>`:''}<button class="btn alt small" onclick="resetPw('${p.user_id}')">${t('pw')}</button><button class="x" onclick="delStaff('${p.user_id}')">✕</button></span></div>`}).join('')||`<p class="mu">${t('none')}</p>`}</div>`}
 /* ---- personnel (basic HR records) ---- */
 const pn0=v=>numv(v)||0;
 function peCalc(){const m=Math.round(pn0($('pe-h').value)*pn0($('pe-r').value)*100)/100;$('pe-ms').value=fmt(m)+' '+(SC().currency||'')}
@@ -411,7 +421,7 @@ function notesView(){
  const g=sel.c?gOf(sel.c):null,noG=sel.c&&!g?`<p class="err">${Z('Configurez d’abord la structure des notes de ce niveau (Les notes › Structure des notes).','First set up the grading structure for this level (Grades › Grading structure).','اضبط أولاً هيكل النقاط لهذه المرحلة (النقاط › هيكل النقاط).')}</p>`:'';
  const annL=Z('Annuelle','Annual','سنوية');
  if(tab=='grades'){
-  let h=`<div class="card">`+(user.role=='teacher'?`<p><b>${esc(nm(C,sel.c))}</b> — ${esc(nm(S,sel.s))}</p>`:`<div class="row"><select onchange="sel.s=null;sel.p=null;sel.k=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('s',this.value)">${opts(S,sel.s)}</select></div>`)+noG;
+  let h=`<div class="card">`+(false?'':`<div class="row"><select onchange="sel.s=null;sel.p=null;sel.k=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('s',this.value)">${opts(S,sel.s)}</select></div>`)+noG;
   if(g){const sp=isSP(g.type),annOnly=sp&&sel.p===0;
    h+=`<div class="row">`+(sp?`<select onchange="pickP(+this.value)">${g.periods.map((p,i)=>`<option value="${i+1}" ${pp()==i+1?'selected':''}>${esc(p.name)}</option>`).join('')}${g.annual=='direct'?`<option value="0" ${sel.p===0?'selected':''}>${annL}</option>`:''}</select>`:'')+
    (annOnly?'':`<select onchange="pick('k',+this.value)">${g.periods[sp?Math.min(pp(),g.periods.length)-1:0].tests.map((n,j)=>`<option value="${j+1}" ${kk()==j+1?'selected':''}>${esc(n)}</option>`).join('')}${!sp&&g.annual=='direct'?`<option value="0" ${sel.k===0?'selected':''}>${annL}</option>`:''}</select>`)+`</div>`;
@@ -419,14 +429,28 @@ function notesView(){
     h+=`<p class="hint">${fmt(mn)} – ${fmt(mx)}</p>`+(E.map(e=>{const val=G[`${e.id}_${sel.s}_${tm}_${ts}`],vs=val==null?'':String(val).replace('.',lang=='en'?'.':',');return `<div class="li"><span>${esc(sn(e))}</span><input type="text" inputmode="decimal" style="width:90px;flex:none" oninput="chk(this,${mn},${mx})" data-old="${vs}" value="${vs}" onchange="setGrade('${e.id}','${sel.s}',this.value,${tm},${ts},${mn},${mx})"></div>`}).join('')||`<p class="mu">${t('none')}</p>`)}}
   return h+`</div>`}
  let r='';
- if(sel.e&&g){const sp=isSP(g.type),mn=+g.min_score,mx=+g.max_score,cols=sp?g.periods.map(p=>p.name):g.periods[0].tests;
-  const rows=S.map(s=>{const per=g.periods.map((p,i)=>p.tests.map((_,j)=>G[`${sel.e}_${s.id}_${i+1}_${j+1}`])),pa=per.map(mean);
-   const an=g.annual=='avg_all'?mean([].concat(...per)):g.annual=='avg_periods'?mean(pa):(G[`${sel.e}_${s.id}_0_0`]==null?null:G[`${sel.e}_${s.id}_0_0`]);
-   return {s,cells:sp?pa:per[0],an}});
-  const wavg=f=>{let a=0,b=0;rows.forEach(x=>{const v=f(x);if(v!=null){a+=v*x.s.coef;b+=+x.s.coef}});return b?a/b:null};
-  const gen=wavg(x=>x.an),mm=gen==null?[]:mentRows(g).filter(m=>gen>=m.from-1e-9).sort((a,b)=>b.from-a.from),mention=mm.length?mm[0].label:'';
-  r=`<div class="card"><h3>${esc(user.name)}</h3><p>${esc(nm(Ex,sel.e))} — ${esc(nm(C,sel.c))}</p><div style="overflow-x:auto"><table><tr><th>${t('subj')}</th><th>${t('coef')}</th>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}<th>${annL}</th></tr>${rows.map(x=>`<tr><td>${esc(x.s.name)}</td><td>${x.s.coef}</td>${x.cells.map(v=>`<td>${fmt(v)}</td>`).join('')}<td><b>${fmt(x.an)}</b></td></tr>`).join('')}<tr><th colspan="2">${t('avg')}</th>${cols.map((_,c)=>`<th>${fmt(wavg(x=>x.cells[c]))}</th>`).join('')}<th>${fmt(gen)}</th></tr></table></div><h3>${t('avg')}: ${fmt(gen)} / ${fmt(mx)}${gen!=null?` — ${gen>=passOf(g)?t('passed'):t('failed')}`:''}</h3>${mention?`<p><b>${esc(mention)}</b></p>`:''}<button class="btn noprint" onclick="window.print()">${t('print')}</button></div>`}
- return (user.role=='parent'?'':`<div class="card noprint"><div class="row"><select onchange="sel.e=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(Ex,sel.e)}</select></div>${noG}</div>`)+r}
+ const spG=g&&isSP(g.type),allL=g?(spG?(g.type=='semestre'?Z('Tous les semestres','All semesters','كل السداسيات'):Z('Tous les trimestres','All trimesters','كل الثلاثيات')):Z('Toutes les évaluations','All evaluations','كل التقويمات')):'';
+ const rpSel=g?`<select onchange="pick('rp',this.value)">${spG?g.periods.map((p,i)=>`<option value="${i+1}" ${sel.rp==String(i+1)?'selected':''}>${esc(p.name)}</option>`).join(''):''}<option value="ann" ${sel.rp=='ann'?'selected':''}>${Z('Annuel','Annual','سنوي')}</option><option value="all" ${(sel.rp||'all')=='all'?'selected':''}>${allL}</option></select>`:'';
+ if(sel.e&&g){
+  const sp=spG,np=g.periods.length,mn=+g.min_score,mx=+g.max_score;
+  let rp=sel.rp||'all';if(!sp&&rp!='ann')rp='all';if(sp&&rp!='ann'&&rp!='all'&&!(+rp>=1&&+rp<=np))rp='all';
+  const calc=id=>S.map(s=>{const per=g.periods.map((p,i)=>p.tests.map((_,j)=>G[`${id}_${s.id}_${i+1}_${j+1}`])),pa=per.map(mean),d=G[`${id}_${s.id}_0_0`],an=g.annual=='avg_all'?mean([].concat(...per)):g.annual=='avg_periods'?mean(pa):(d==null?null:d);return {s,per,pa,an}});
+  const wav=(rows,f)=>{let a=0,b=0;rows.forEach(x=>{const v=f(x);if(v!=null){a+=v*x.s.coef;b+=+x.s.coef}});return b?a/b:null};
+  const metric=rows=>(rp=='all'||rp=='ann')?wav(rows,x=>x.an):wav(rows,x=>x.pa[+rp-1]);
+  const rows=calc(sel.e),gen=metric(rows);
+  let heads,cellsOf;
+  if(rp=='ann'){heads=[annL];cellsOf=x=>[x.an]}
+  else if(rp=='all'){heads=(sp?g.periods.map(p=>p.name):g.periods[0].tests).concat([annL]);cellsOf=x=>(sp?x.pa:x.per[0]).concat([x.an])}
+  else{const pi=+rp-1;heads=g.periods[pi].tests.concat([Z('Moyenne','Average','المعدل')]);cellsOf=x=>x.per[pi].concat([x.pa[pi]])}
+  const mm=gen==null?[]:mentRows(g).filter(m=>gen>=m.from-1e-9).sort((a,b)=>b.from-a.from),mention=mm.length?mm[0].label:'';
+  const stu=D.students.find(x=>x.id==sel.e)||{},mates=E.filter(s=>!s.dropped),showRank=user.role!='parent';
+  let rank=null;if(showRank&&gen!=null){const all=mates.map(s=>metric(calc(s.id))).filter(v=>v!=null);rank=1+all.filter(v=>v>gen+1e-9).length}
+  const ordn=(n,sx)=>lang=='fr'?(n==1?(sx=='F'?'1ère':'1er'):n+'e'):lang=='en'?n+(([11,12,13].includes(n%100))?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th')):(n==1?(sx=='F'?'الأولى':'الأول'):String(n));
+  const plabel=rp=='ann'?Z('Annuel','Annual','سنوي'):rp=='all'?allL:g.periods[+rp-1].name,sc=SC();
+  const head=`<div class="bhead">${sc.logo?`<img src="${sc.logo}" alt="">`:''}<div><b style="font-size:1.1rem">${esc(sc.name||user.name)}</b><br>${esc(sc.address||'')}${sc.address?'<br>':''}${[sc.phone,sc.email].filter(Boolean).map(esc).join(' · ')}</div></div><h3 style="text-align:center;margin:10px 0 2px">${Z('BULLETIN DE NOTES','REPORT CARD','كشف النقاط')} — ${esc(plabel)}</h3><p style="text-align:center;margin:0 0 10px">${Z('Année scolaire','School year','السنة الدراسية')} : <b>${esc(stu.year||'')}</b></p>`;
+  r=`<div class="card">${head}<p><b>${esc(nm(Ex,sel.e))}</b>${stu.matricule?' · '+esc(stu.matricule):''}<br>${esc(nm(C,sel.c))}</p><div style="overflow-x:auto"><table><tr><th>${t('subj')}</th><th>${t('coef')}</th>${heads.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${rows.map(x=>`<tr><td>${esc(x.s.name)}</td><td>${x.s.coef}</td>${cellsOf(x).map((v,i,a)=>i==a.length-1?`<td><b>${fmt(v)}</b></td>`:`<td>${fmt(v)}</td>`).join('')}</tr>`).join('')}<tr><th colspan="2">${t('avg')}</th>${heads.map((_,c)=>`<th>${fmt(wav(rows,x=>cellsOf(x)[c]))}</th>`).join('')}</tr></table></div><h3>${t('avg')}: ${fmt(gen)} / ${fmt(mx)}${gen!=null?` — ${gen>=passOf(g)?t('passed'):t('failed')}`:''}</h3>${mention?`<p><b>${esc(mention)}</b></p>`:''}${showRank?`<p>${Z('Effectif de la classe','Students in class','عدد التلاميذ في القسم')} : <b>${mates.length}</b><br>${Z('Rang','Position','الترتيب')} : <b>${rank==null?'-':ordn(rank,stu.sex)}</b></p>`:''}<button class="btn noprint" onclick="window.print()">${t('print')}</button></div>`}
+ return (user.role=='parent'?`<div class="card noprint"><div class="row">${rpSel}</div></div>`:`<div class="card noprint"><div class="row"><select onchange="sel.e=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(Ex,sel.e)}</select>${rpSel}</div>${noG}</div>`)+r}
+
 /* ---- render ---- */
 function view(){
  if(user.admin)return schoolsView();
