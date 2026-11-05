@@ -43,7 +43,7 @@ header select{width:auto;min-height:0;padding:5px;color:#000}
 .ic{display:block;font-size:1.6rem}
 table{width:100%;border-collapse:collapse}
 td,th{border-bottom:1px solid var(--bd);padding:6px;text-align:start}
-.err{color:var(--rd)}.mt td,.mt th{padding:3px}.bhead{display:flex;gap:12px;align-items:center;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:8px}.bhead img{max-height:72px;max-width:96px}.mt input{min-height:38px;padding:6px}
+.err{color:var(--rd)}.tn{color:var(--mu);font-weight:400;font-size:.8rem}.ut td:not(:first-child),.ut th:not(:first-child){text-align:center}.pfoot{text-align:center;font-size:.75rem;color:var(--mu);margin-top:14px}.mt td,.mt th{padding:3px}.bhead{display:flex;gap:12px;align-items:center;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:8px}.bhead img{max-height:72px;max-width:96px}.mt input{min-height:38px;padding:6px}
 .bad{border-color:var(--rd)!important;background:#fdd!important;color:#900!important}
 .hidden{display:none!important}
 .acc-btn{display:flex;justify-content:space-between;width:100%;min-height:50px;background:var(--ink);color:#fff;border:0;border-radius:8px;padding:12px 14px;font-weight:700;margin-top:10px;cursor:pointer}
@@ -69,7 +69,7 @@ nav button.active{color:var(--ink2);font-weight:700;border-top-color:var(--ac);b
 #dlg .acts{display:flex;gap:8px;justify-content:flex-end;padding:0 14px 14px}
 #dlg .acts button{padding:8px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--card);cursor:pointer}
 #dlg .acts .btn{width:auto;margin:0;min-height:0;background:var(--ink);color:#fff;border:2px solid var(--ink)}
-@media print{header,nav,.noprint{display:none!important}.card{border:0}}
+@media print{header,nav,.noprint{display:none!important}.card{border:0}.pfoot{position:fixed;bottom:6mm;left:0;right:0;margin:0}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
@@ -367,7 +367,7 @@ function tsAll(){document.querySelectorAll('.chk[data-c]:not(.hidden) .tsc').for
 const tsPicked=()=>[...document.querySelectorAll('.tsc:checked')].map(e=>e.value);
 async function saveTs(){const uid=sel.ut,ids=tsPicked();if(!ids.length)return note(Z('Cochez au moins une matière.','Tick at least one subject.','حدد مادة واحدة على الأقل.'));
  let r=await sb.from('teacher_subjects').delete().eq('user_id',uid);if(r.error)return note(r.error.message);
- r=await sb.from('teacher_subjects').insert(ids.map(id=>({school_id:user.sid,user_id:uid,subject_id:id})));if(r.error)return note(r.error.message);
+ r=await sb.from('teacher_subjects').insert(ids.map(id=>({school_id:user.sid,user_id:uid,subject_id:id,teacher_name:((D.staff.find(x=>x.user_id==uid)||{}).full_name||'')})));if(r.error)return note(r.error.message);
  sel.ut=null;await load();render();window.scrollTo(0,0);note(t('saved'))}
 async function addStaff(){
  const role=$('rl').value,us=$('us').value.trim().toLowerCase(),pw=$('pw2').value,sj=tsPicked();
@@ -380,7 +380,7 @@ async function addStaff(){
  if(error||!u.user)return note(error?error.message:'Error');
  const {error:e3}=await sb.from('profiles').insert({user_id:u.user.id,school_id:user.sid,role,full_name:fn,username:us,student_id:stu?stu.id:null,personnel_id:pid});
  if(e3)return note(e3.message);
- if(role=='teacher'){const {error:e4}=await sb.from('teacher_subjects').insert(sj.map(id=>({school_id:user.sid,user_id:u.user.id,subject_id:id})));if(e4)note(e4.message)}
+ if(role=='teacher'){const {error:e4}=await sb.from('teacher_subjects').insert(sj.map(id=>({school_id:user.sid,user_id:u.user.id,subject_id:id,teacher_name:fn})));if(e4)note(e4.message)}
  await load();render()}
 async function resetPw(uid){const pw=await dlg(t('pw')+' (6+)',{input:1});if(!pw)return;if(pw.length<6)return note(t('chk2'));const {error}=await sb.rpc('set_staff_password',{uid,pw});note(error?error.message:t('saved'))}
 async function delStaff(uid){const p=D.staff.find(x=>x.user_id==uid)||{};if(!await ask(`${t('delq')} « ${p.full_name||''} » ?`))return;const {error}=await sb.rpc('delete_staff',{uid});if(error)note(error.message);await load();render()}
@@ -422,9 +422,13 @@ function chk(el,mn,mx){const v=el.value;if(v!==''){const n=numv(v);if(!/^-?[0-9]
 async function setGrade(e,s,v,tm,ts,mn,mx){const k=`${e}_${s}_${tm}_${ts}`,n=numv(v);
  if(String(v).trim()===''||n==null){delete G[k];await sb.from('grades').delete().eq('student_id',e).eq('subject_id',s).eq('term',tm).eq('test',ts);return}
  const z=Math.max(mn,Math.min(mx,n));G[k]=z;const {error}=await sb.from('grades').upsert({school_id:user.sid,student_id:e,subject_id:s,term:tm,test:ts,value:z},{onConflict:'student_id,subject_id,term,test'});if(error)note(error.message)}
+const tNames=sid=>[...new Set(D.ts.filter(x=>x.subject_id==sid).map(x=>x.teacher_name||(D.staff.find(p=>p.user_id==x.user_id)||{}).full_name||'').filter(Boolean))].join(', ');
+function footText(){const d=new Date(),q=n=>String(n).padStart(2,'0'),tm=`${q(d.getHours())}:${q(d.getMinutes())}:${q(d.getSeconds())}`,dt=d.toLocaleDateString(lang=='ar'?'ar':lang=='en'?'en-GB':'fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+ return Z(`Développé par Gandal Solutions | +224 623 36 60 69 | imprimé le ${dt} à ${tm}`,`Developed by Gandal Solutions | +224 623 36 60 69 | printed on ${dt} at ${tm}`,`تطوير Gandal Solutions | +224 623 36 60 69 | طُبع في ${dt} الساعة ${tm}`)}
+window.addEventListener('beforeprint',()=>document.querySelectorAll('.pfoot').forEach(e=>e.textContent=footText()));
 const mean=a=>{a=a.filter(z=>z!=null);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null};
 function notesView(){
- const C=D.classes.map(cl),S=D.subjects.filter(x=>x.class_id==sel.c),E=D.students.filter(x=>x.class_id==sel.c&&!x.exit_date),sn=s=>s.nom?s.nom+' '+(s.prenom||''):s.name,Ex=E.map(s=>({id:s.id,name:sn(s)}));
+ const C=D.classes.map(cl),S=D.subjects.filter(x=>x.class_id==sel.c),E=D.students.filter(x=>x.class_id==sel.c&&!x.exit_date),sn=s=>s.nom?s.nom+' '+(s.prenom||''):s.name,Ex=E.map(s=>({id:s.id,name:sn(s)})),Em=E.map(s=>({id:s.id,name:s.matricule||sn(s)}));
  const g=sel.c?gOf(sel.c):null,noG=sel.c&&!g?`<p class="err">${Z('Configurez d’abord la structure des notes de ce niveau (Les notes › Structure des notes).','First set up the grading structure for this level (Grades › Grading structure).','اضبط أولاً هيكل النقاط لهذه المرحلة (النقاط › هيكل النقاط).')}</p>`:'';
  const annL=Z('Annuelle','Annual','سنوية');
  if(tab=='grades'){
@@ -437,10 +441,11 @@ function notesView(){
   return h+`</div>`}
  let r='';
  const spG=g&&isSP(g.type),allL=g?(spG?(g.type=='semestre'?Z('Tous les semestres','All semesters','كل السداسيات'):Z('Tous les trimestres','All trimesters','كل الثلاثيات')):Z('Toutes les évaluations','All evaluations','كل التقويمات')):'';
- const rpSel=g?`<select onchange="pick('rp',this.value)">${spG?g.periods.map((p,i)=>`<option value="${i+1}" ${sel.rp==String(i+1)?'selected':''}>${esc(p.name)}</option>`).join(''):''}<option value="ann" ${sel.rp=='ann'?'selected':''}>${Z('Annuel','Annual','سنوي')}</option><option value="all" ${(sel.rp||'all')=='all'?'selected':''}>${allL}</option></select>`:'';
+ const uni=sel.rm=='uni',rpv=uni?((sel.rp&&sel.rp!='all')?sel.rp:'ann'):(sel.rp||'all');
+ const rpSel=g?`<select onchange="pick('rp',this.value)">${spG?g.periods.map((p,i)=>`<option value="${i+1}" ${rpv==String(i+1)?'selected':''}>${esc(p.name)}</option>`).join(''):''}<option value="ann" ${rpv=='ann'?'selected':''}>${Z('Annuel','Annual','سنوي')}</option>${uni?'':`<option value="all" ${rpv=='all'?'selected':''}>${allL}</option>`}</select>`:'',rmSel=g?`<select onchange="pick('rm',this.value)"><option value="inc" ${!uni?'selected':''}>${Z('Inclusif','Inclusive','شامل')}</option><option value="uni" ${uni?'selected':''}>${Z('Unique','Unique','مفرد')}</option></select>`:'';
  if(sel.e&&g){
   const sp=spG,np=g.periods.length,mn=+g.min_score,mx=+g.max_score;
-  let rp=sel.rp||'all';if(!sp&&rp!='ann')rp='all';if(sp&&rp!='ann'&&rp!='all'&&!(+rp>=1&&+rp<=np))rp='all';
+  let rp=rpv;if(!sp&&rp!='ann')rp='all';if(sp&&rp!='ann'&&rp!='all'&&!(+rp>=1&&+rp<=np))rp='all';
   const calc=id=>S.map(s=>{const per=g.periods.map((p,i)=>p.tests.map((_,j)=>G[`${id}_${s.id}_${i+1}_${j+1}`])),pa=per.map(mean),d=G[`${id}_${s.id}_0_0`],an=g.annual=='avg_all'?mean([].concat(...per)):g.annual=='avg_periods'?mean(pa):(d==null?null:d);return {s,per,pa,an}});
   const wav=(rows,f)=>{let a=0,b=0;rows.forEach(x=>{const v=f(x);if(v!=null){a+=v*x.s.coef;b+=+x.s.coef}});return b?a/b:null};
   const metric=rows=>(rp=='all'||rp=='ann')?wav(rows,x=>x.an):wav(rows,x=>x.pa[+rp-1]);
@@ -455,8 +460,16 @@ function notesView(){
   const ordn=(n,sx)=>lang=='fr'?(n==1?(sx=='F'?'1ère':'1er'):n+'e'):lang=='en'?n+(([11,12,13].includes(n%100))?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th')):(n==1?(sx=='F'?'الأولى':'الأول'):String(n));
   const plabel=rp=='ann'?Z('Annuel','Annual','سنوي'):rp=='all'?allL:g.periods[+rp-1].name,sc=SC();
   const head=`<div class="bhead">${sc.logo?`<img src="${sc.logo}" alt="">`:''}<div><b style="font-size:1.1rem">${esc(sc.name||user.name)}</b><br>${esc(sc.address||'')}${sc.address?'<br>':''}${[sc.phone,sc.email].filter(Boolean).map(esc).join(' · ')}</div></div><h3 style="text-align:center;margin:10px 0 2px">${Z('BULLETIN DE NOTES','REPORT CARD','كشف النقاط')} — ${esc(plabel)}</h3><p style="text-align:center;margin:0 0 10px">${Z('Année scolaire','School year','السنة الدراسية')} : <b>${esc(stu.year||'')}</b></p>`;
-  r=`<div class="card">${head}<p><b>${esc(nm(Ex,sel.e))}</b>${stu.matricule?' · '+esc(stu.matricule):''}<br>${esc(nm(C,sel.c))}</p><div style="overflow-x:auto"><table><tr><th>${t('subj')}</th><th>${t('coef')}</th>${heads.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${rows.map(x=>`<tr><td>${esc(x.s.name)}</td><td>${x.s.coef}</td>${cellsOf(x).map((v,i,a)=>i==a.length-1?`<td><b>${fmt(v)}</b></td>`:`<td>${fmt(v)}</td>`).join('')}</tr>`).join('')}<tr><th colspan="2">${t('avg')}</th>${heads.map((_,c)=>`<th>${fmt(wav(rows,x=>cellsOf(x)[c]))}</th>`).join('')}</tr></table></div><h3>${t('avg')}: ${fmt(gen)} / ${fmt(mx)}${gen!=null?` — ${gen>=passOf(g)?t('passed'):t('failed')}`:''}</h3>${mention?`<p><b>${esc(mention)}</b></p>`:''}${showRank?`<p>${Z('Effectif de la classe','Students in class','عدد التلاميذ في القسم')} : <b>${mates.length}</b><br>${Z('Rang','Position','الترتيب')} : <b>${rank==null?'-':ordn(rank,stu.sex)}</b></p>`:''}<button class="btn noprint" onclick="window.print()">${t('print')}</button></div>`}
- return (user.role=='parent'?`<div class="card noprint"><div class="row">${rpSel}</div></div>`:`<div class="card noprint"><div class="row"><select onchange="sel.e=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(Ex,sel.e)}</select>${rpSel}</div>${noG}</div>`)+r}
+  const incTbl=`<div style="overflow-x:auto"><table><tr><th>${t('subj')}</th><th>${t('coef')}</th>${heads.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${rows.map(x=>`<tr><td>${esc(x.s.name)}</td><td>${x.s.coef}</td>${cellsOf(x).map((v,i,a)=>i==a.length-1?`<td><b>${fmt(v)}</b></td>`:`<td>${fmt(v)}</td>`).join('')}</tr>`).join('')}<tr><th colspan="2">${t('avg')}</th>${heads.map((_,c)=>`<th>${fmt(wav(rows,x=>cellsOf(x)[c]))}</th>`).join('')}</tr></table></div>`;
+  let uniTbl='';
+  if(uni){
+   const valOf=x=>rp=='ann'?x.an:x.pa[+rp-1],cls=showRank?mates.map(m=>({id:m.id,rows:calc(m.id)})):[{id:sel.e,rows}],rk=(vals,v)=>v==null?null:1+vals.filter(z=>z>v+1e-9).length;
+   const trs=rows.map((x,i)=>{const mine=valOf(x),vals=showRank?cls.map(c=>valOf(c.rows[i])).filter(v=>v!=null):[],lo=vals.length?Math.min(...vals):null,hi=vals.length?Math.max(...vals):null,r_=showRank?rk(vals,mine):null,tn=tNames(x.s.id);
+    return `<tr><td>${esc(x.s.name)}${tn?`<br><span class="tn">${esc(tn)}</span>`:''}</td><td>${x.s.coef}</td><td>${showRank?fmt(lo):'-'}</td><td>${showRank?fmt(hi):'-'}</td><td><b>${fmt(mine)}</b></td><td>${r_==null?'-':ordn(r_,stu.sex)}</td></tr>`}).join('');
+   const gens=showRank?cls.map(c=>metric(c.rows)).filter(v=>v!=null):[],tc=rows.reduce((a,x)=>a+(valOf(x)!=null?+x.s.coef:0),0);
+   uniTbl=`<div style="overflow-x:auto"><table class="ut"><tr><th>${t('subj')}</th><th>${Z('Coef','Coef','المعامل')}</th><th>${Z('Min','Min','الأدنى')}</th><th>${Z('Max','Max','الأقصى')}</th><th>${Z('Moyenne','Average','المعدل')}</th><th>${Z('Rang','Rank','الترتيب')}</th></tr>${trs}<tr><th>${Z('Moyenne générale','Overall average','المعدل العام')}</th><th>${tc}</th><th>${showRank?fmt(gens.length?Math.min(...gens):null):'-'}</th><th>${showRank?fmt(gens.length?Math.max(...gens):null):'-'}</th><th>${fmt(gen)}</th><th>${rank==null?'-':ordn(rank,stu.sex)}</th></tr></table></div>`}
+  r=`<div class="card">${head}<p><b>${esc(nm(Ex,sel.e))}</b>${stu.matricule?' · '+esc(stu.matricule):''}<br>${esc(nm(C,sel.c))}</p>${uni?uniTbl:incTbl}<h3>${t('avg')}: ${fmt(gen)} / ${fmt(mx)}${gen!=null?` — ${gen>=passOf(g)?t('passed'):t('failed')}`:''}</h3>${mention?`<p><b>${esc(mention)}</b></p>`:''}${showRank?`<p>${Z('Effectif de la classe','Students in class','عدد التلاميذ في القسم')} : <b>${mates.length}</b><br>${Z('Rang','Position','الترتيب')} : <b>${rank==null?'-':ordn(rank,stu.sex)}</b></p>`:''}<button class="btn noprint" onclick="window.print()">${t('print')}</button>${uni?`<div class="pfoot">${footText()}</div>`:''}</div>`}
+ return (user.role=='parent'?`<div class="card noprint"><div class="row">${rpSel}${rmSel}</div></div>`:`<div class="card noprint"><div class="row"><select onchange="sel.e=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(Em,sel.e)}</select>${rpSel}${rmSel}</div>${noG}</div>`)+r}
 
 /* ---- render ---- */
 function view(){
