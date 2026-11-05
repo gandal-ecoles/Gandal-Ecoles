@@ -43,7 +43,7 @@ header select{width:auto;min-height:0;padding:5px;color:#000}
 .ic{display:block;font-size:1.6rem}
 table{width:100%;border-collapse:collapse}
 td,th{border-bottom:1px solid var(--bd);padding:6px;text-align:start}
-.err{color:var(--rd)}.mt td,.mt th{padding:3px}.mt input{min-height:38px;padding:6px}
+.err{color:var(--rd)}.tn{color:var(--mu);font-weight:400;font-size:.8rem}.ut td:not(:first-child),.ut th:not(:first-child){text-align:center}.pfoot{text-align:center;font-size:.75rem;color:var(--mu);margin-top:14px}.mt td,.mt th{padding:3px}.bhead{display:flex;gap:12px;align-items:center;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:8px}.bhead img{max-height:72px;max-width:96px}.mt input{min-height:38px;padding:6px}
 .bad{border-color:var(--rd)!important;background:#fdd!important;color:#900!important}
 .hidden{display:none!important}
 .acc-btn{display:flex;justify-content:space-between;width:100%;min-height:50px;background:var(--ink);color:#fff;border:0;border-radius:8px;padding:12px 14px;font-weight:700;margin-top:10px;cursor:pointer}
@@ -69,7 +69,7 @@ nav button.active{color:var(--ink2);font-weight:700;border-top-color:var(--ac);b
 #dlg .acts{display:flex;gap:8px;justify-content:flex-end;padding:0 14px 14px}
 #dlg .acts button{padding:8px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--card);cursor:pointer}
 #dlg .acts .btn{width:auto;margin:0;min-height:0;background:var(--ink);color:#fff;border:2px solid var(--ink)}
-@media print{header,nav,.noprint{display:none!important}.card{border:0}}
+@media print{header,nav,.noprint{display:none!important}.card{border:0}.pfoot{position:fixed;bottom:6mm;left:0;right:0;margin:0}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
@@ -110,7 +110,7 @@ function dlg(text,o={}){return new Promise(res=>{const d=$('dlg');d.innerHTML=`<
  $('dy').onclick=()=>{d.style.display='none';res(o.input?$('dli').value:true)};const n=$('dn');if(n)n.onclick=()=>{d.style.display='none';res(o.input?null:false)}})}
 const note=x=>dlg(x,{info:1}),ask=x=>dlg(x);
 async function load(){
- const SCOLS='id,school_id,class_id,name,nom,prenom,matricule,year,birth_date,birth_place,mother_tongue,sex,enroll_date,status,origin_school,repeater,reduction,reduction_reason,dropped,father,mother,guardian,emergency,docs,history';
+ const SCOLS='id,school_id,class_id,name,nom,prenom,matricule,year,birth_date,birth_place,mother_tongue,sex,enroll_date,status,origin_school,repeater,reduction,reduction_reason,dropped,exit_date,exit_reason,exit_class_id,exit_destination,father,mother,guardian,emergency,docs,history';
  const q=(k,o,c)=>{const r=sb.from(k).select(c||'*');return o?r.order(o,{ascending:true}):r};
  const r=await Promise.all([q('schools','created_at'),q('levels','name'),q('classes','name'),q('subjects','name'),q('students','name',SCOLS),q('grades'),q('profiles'),q('school_years','name'),q('grading'),q('personnel','last_name'),q('teacher_subjects')]);
  const e=r.find(z=>z.error);if(e)note(e.error.message);
@@ -281,20 +281,21 @@ ${fl('e-ln',Z('Lieu de naissance','Place of birth','مكان الميلاد'),S.
 <label for="e-lv">${t('level')}</label><select id="e-lv"><option value="">—</option>${D.levels.map(l=>`<option value="${l.id}" ${l.id==lv?'selected':''}>${esc(l.name)}</option>`).join('')}</select>
 <label for="e-cls">${t('cls')}</label><select id="e-cls"></select>
 <label for="e-di">${Z('Date d’inscription','Enrollment date','تاريخ التسجيل')}</label><input id="e-di" type="date" value="${esc(S.enroll_date||today())}">
-<label for="e-stat">${Z('Statut','Status','الحالة')}</label><select id="e-stat"><option value="">—</option><option value="Ancien" ${S.status=='Ancien'?'selected':''}>${Z('Ancien','Returning','قديم')}</option><option value="Nouveau" ${S.status=='Nouveau'?'selected':''}>${Z('Nouveau','New','جديد')}</option></select>
+<label for="e-stat">${Z('Statut','Status','الحالة')}</label><select id="e-stat"><option value="">—</option><option value="Ancien" ${S.status=='Ancien'?'selected':''}>${Z('Ancien','Old','قديم')}</option><option value="Nouveau" ${S.status=='Nouveau'?'selected':''}>${Z('Nouveau','New','جديد')}</option><option value="Premiere" ${S.status=='Premiere'?'selected':''}>${Z('Première année à l’école','First year in school','السنة الأولى في المدرسة')}</option></select>
 <div id="e-ow" class="hidden">${fl('e-orig',Z('École d’origine','Previous school','المدرسة الأصلية'),S.origin_school)}</div>
 <label for="e-red">${Z('Redoublant','Repeater','معيد')}</label><select id="e-red">${yn(ed?!!S.repeater:false)}</select>
 <label for="e-rb">${Z('Réduction (%)','Reduction (%)','التخفيض (%)')}</label><input id="e-rb" inputmode="numeric" value="${ed?S.reduction:0}">
 <label for="e-mot">${Z('Motif de réduction','Reduction reason','سبب التخفيض')}</label><select id="e-mot"><option value="">—</option>${MOTIFS().map(m=>`<option value="${esc(m[0])}" ${S.reduction_reason==m[0]?'selected':''}>${esc(m[1])}</option>`).join('')}</select>
-<label for="e-aban">${Z('Abandonné','Dropped out','منقطع')}</label><select id="e-aban">${yn(ed?!!S.dropped:false)}</select>
 <label>${Z('Photo de l’élève','Student photo','صورة التلميذ')}</label><div class="photo"><img id="e-img" class="hidden" alt=""><div class="btns"><input type="file" id="e-pf" accept="image/*" class="hidden"><button class="btn alt small" type="button" id="e-pb"></button><button class="btn alt small hidden" type="button" id="e-pd">✕</button></div></div>`;
  const par=`<div class="sub">${Z('Père','Father','الأب')}</div>${fl('p-pre',Z('Prénom(s)','First name(s)','الاسم'),P.prenom)}${fl('p-adr',Z('Adresse','Address','العنوان'),P.adresse)}${tl('p-tel',Z('Contact','Contact','الاتصال'),P.contact)}${fl('p-prof',Z('Profession','Profession','المهنة'),P.profession)}
 <div class="sub">${Z('Mère','Mother','الأم')}</div>${fl('m-nom',Z('Nom et prénom(s)','Full name','الاسم الكامل'),M.nom)}${tl('m-tel',Z('Contact','Contact','الاتصال'),M.contact)}${fl('m-prof',Z('Profession','Profession','المهنة'),M.profession)}
 <div class="sub">${Z('Tuteur ou tutrice','Guardian','الوصي')}</div>${fl('t-nom',Z('Nom et prénom(s)','Full name','الاسم الكامل'),U.nom)}${fl('t-lien',Z('Lien avec l’élève','Relationship','الصلة بالتلميذ'),U.lien)}${tl('t-tel',Z('Contact','Contact','الاتصال'),U.contact)}${fl('t-prof',Z('Profession','Profession','المهنة'),U.profession)}${fl('t-adr',Z('Adresse','Address','العنوان'),U.adresse)}
 <div class="sub">${Z('Urgence','Emergency','الطوارئ')}</div>${fl('u-nom',Z('Personne à contacter','Contact person','الشخص المراد الاتصال به'),E.nom)}${tl('u-tel',Z('Contact','Contact','الاتصال'),E.contact)}${fl('u-lien',Z('Lien avec l’élève','Relationship','الصلة بالتلميذ'),E.lien)}`;
  const docs=ck('d-ext',Z('Extrait de naissance','Birth certificate','شهادة الميلاد'),Dc.extrait)+ck('d-pho',Z('Photos','Photos','صور'),Dc.photos)+ck('d-bul',Z('Bulletin précédent','Previous report card','الكشف السابق'),Dc.bulletin)+ck('d-liv',Z('Livret scolaire','School booklet','الدفتر المدرسي'),Dc.livret);
+const xc=S.exit_class_id||(ed?S.class_id:''),xl=xc?(D.classes.find(c=>c.id==xc)||{}).level_id:'';
+ const xit=`<p class="hint">${Z('Remplissez cette section seulement si l’élève a quitté l’école. Il ne sera plus compté dans les notes, l’effectif et les frais, mais son dossier reste en historique.','Fill this section only if the student left the school. He or she will no longer count in grades, class size and fees, but the record stays as history.','املأ هذا القسم فقط إذا غادر التلميذ المدرسة. لن يُحتسب في النقاط والعدد والرسوم، لكن يبقى سجله في التاريخ.')}</p><label for="x-date">${Z('Date de départ','Exit date','تاريخ المغادرة')}</label><input id="x-date" type="date" max="${today()}" value="${esc(S.exit_date||'')}">${fl('x-why',Z('Motif (exclu, transféré dans une autre ville, etc.)','Reason (expelled, moved to another town, etc.)','السبب (مفصول، انتقل إلى مدينة أخرى، إلخ)'),S.exit_reason)}<label for="x-lv">${t('level')}</label><select id="x-lv"><option value="">—</option>${D.levels.map(l=>`<option value="${l.id}" ${l.id==xl?'selected':''}>${esc(l.name)}</option>`).join('')}</select><label for="x-cls">${t('cls')}</label><select id="x-cls"></select>${fl('x-dest',Z('École de destination','Destination school','المدرسة المنتقل إليها'),S.exit_destination)}${S.exit_date?`<button class="btn alt" type="button" onclick="clearExit()">${Z('Annuler la sortie (réintégrer l’élève)','Cancel exit (re-enroll the student)','إلغاء المغادرة (إعادة التلميذ)')}</button>`:''}`;
  return `<p class="crumb">${ed?Z('Modifier l’élève ','Edit student ','تعديل التلميذ ')+esc(S.matricule||''):Z('Nouvel élève','New student','تلميذ جديد')}</p>`+
- acc(0,Z('1. Information sur l’élève','1. Student information','1. معلومات التلميذ'),info)+acc(1,Z('2. Parents','2. Parents','2. الوالدان'),par)+acc(2,Z('3. Documents fournis','3. Documents provided','3. الوثائق المقدمة'),docs)+
+ acc(0,Z('1. Information sur l’élève','1. Student information','1. معلومات التلميذ'),info)+acc(1,Z('2. Parents','2. Parents','2. الوالدان'),par)+acc(2,Z('3. Documents fournis','3. Documents provided','3. الوثائق المقدمة'),docs)+acc(3,Z('4. Sortie / Abandon','4. Exit / Dropout','4. المغادرة / الانقطاع'),xit)+
  `<div class="row2"><button class="btn alt" type="button" onclick="sel.ed=null;sel.pre=null;render()">${Z('Annuler','Cancel','إلغاء')}</button><button class="btn" type="button" onclick="saveStudent()">${ed?Z('Enregistrer les modifications','Save changes','حفظ التعديلات'):t('save')}</button></div>
 <div class="card" style="margin-top:14px"><h2>${Z('Élèves enregistrés','Registered students','التلاميذ المسجلون')} (${D.students.length})</h2><label for="e-fy">${Z('Année scolaire','School year','السنة الدراسية')}</label><select id="e-fy"><option value="">${Z('Toutes les années','All years','كل السنوات')}</option>${D.years.map(y=>y.name).sort().reverse().map(y=>`<option>${esc(y)}</option>`).join('')}</select><label for="e-q">${Z('Recherche','Search','بحث')}</label><input id="e-q" type="search" placeholder="${Z('Nom, prénom ou matricule','Name or student ID','الاسم أو رقم التسجيل')}" autocomplete="off"><div id="e-list"></div></div>`}
 let accBtns=[],accPans=[];
@@ -306,6 +307,8 @@ function bindStudents(){
  const fill=()=>{const l=$('e-lv').value,keep=ed&&ed.class_id,ls=l?D.classes.filter(c=>c.level_id==l&&(c.active!==false||c.id==keep)):[];
   $('e-cls').innerHTML=`<option value="">${l?(ls.length?Z('— Choisir la classe —','— Choose class —','— اختر القسم —'):Z('Aucune classe active','No active class','لا قسم نشط')):Z('Choisissez d’abord le niveau','Choose the level first','اختر المرحلة أولاً')}</option>`+ls.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');$('e-cls').disabled=!ls.length};
  $('e-lv').onchange=fill;fill();const c0=ed?ed.class_id:(sel.pre||{}).cls;if(c0)$('e-cls').value=c0;
+ const fillX=()=>{const l=$('x-lv').value,ls=l?D.classes.filter(c=>c.level_id==l):[];$('x-cls').innerHTML=`<option value="">${l?Z('— Choisir la classe —','— Choose class —','— اختر القسم —'):Z('Choisissez d’abord le niveau','Choose the level first','اختر المرحلة أولاً')}</option>`+ls.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');$('x-cls').disabled=!ls.length};
+ $('x-lv').onchange=fillX;fillX();const xc0=ed&&(ed.exit_class_id||ed.class_id);if(xc0&&$('x-lv').value)$('x-cls').value=xc0;
  const tg=()=>$('e-ow').classList.toggle('hidden',$('e-stat').value!='Nouveau');$('e-stat').onchange=tg;tg();
  $('e-rb').oninput=function(){let d=this.value.replace(/\D/g,'').slice(0,3);if(d!==''&&+d>100)d='100';this.value=d};
  const paint=()=>{$('e-img').src=curPhoto||'';$('e-img').classList.toggle('hidden',!curPhoto);$('e-pd').classList.toggle('hidden',!curPhoto);$('e-pb').textContent=curPhoto?Z('Changer la photo','Change photo','تغيير الصورة'):Z('Ajouter une photo','Add photo','إضافة صورة')};
@@ -315,8 +318,9 @@ function bindStudents(){
  $('e-pf').onchange=function(){const f=this.files&&this.files[0];this.value='';if(!f)return;img(f,160,'image/jpeg',.6,d=>{if(!d)return note(Z('Photo illisible','Unreadable photo','صورة غير صالحة'));curPhoto=d;photoDirty=true;paint()})};
  const draw=()=>{const q=plain($('e-q').value.trim()),fy=$('e-fy').value;
   const res=D.students.slice().sort((a,b)=>(b.matricule||'').localeCompare(a.matricule||'')).filter(s=>(!fy||s.year==fy||(s.history||[]).some(h=>h.year==fy))&&(!q||plain((s.nom||'')+' '+(s.prenom||'')+' '+(s.name||'')+' '+(s.matricule||'')).includes(q))),MAX=30;
-  $('e-list').innerHTML=(res.slice(0,MAX).map(s=>{const h=(s.history||[]);return `<div class="item"><span class="no">${esc(s.matricule||'—')}</span><div class="tx">${esc(s.nom?s.nom+' '+(s.prenom||''):s.name)}${s.dropped?`<span class="tag off">${Z('Abandonné','Dropped','منقطع')}</span>`:''}<small>${esc(clsLabel(s.class_id))} · ${esc(s.year||'')}</small>${h.length?`<small>${Z('Historique','History','السجل')} : ${h.map(x=>esc(clsLabel(x.class_id))+' ('+esc(x.year)+')').join(', ')}</small>`:''}</div><div class="btns"><button class="btn alt small" onclick="sel.ed='${s.id}';render();window.scrollTo(0,0)">${Z('Modifier','Edit','تعديل')}</button></div></div>`}).join('')||`<p class="hint">${t('none')}</p>`)+(res.length>MAX?`<p class="hint">${MAX}/${res.length}</p>`:'')};
+  $('e-list').innerHTML=(res.slice(0,MAX).map(s=>{const h=(s.history||[]);return `<div class="item"><span class="no">${esc(s.matricule||'—')}</span><div class="tx">${esc(s.nom?s.nom+' '+(s.prenom||''):s.name)}${s.exit_date?`<span class="tag off">${Z('Sorti(e)','Left','غادر')}</span>`:''}<small>${esc(clsLabel(s.class_id))} · ${esc(s.year||'')}</small>${s.exit_date?`<small>${Z('Départ','Exit','المغادرة')} : ${esc(s.exit_date)} · ${esc(s.exit_reason||'')}${s.exit_destination?' → '+esc(s.exit_destination):''}</small>`:''}${h.length?`<small>${Z('Historique','History','السجل')} : ${h.map(x=>esc(clsLabel(x.class_id))+' ('+esc(x.year)+')').join(', ')}</small>`:''}</div><div class="btns"><button class="btn alt small" onclick="sel.ed='${s.id}';render();window.scrollTo(0,0)">${Z('Modifier','Edit','تعديل')}</button><button class="x" onclick="del('students','${s.id}')">✕</button></div></div>`}).join('')||`<p class="hint">${t('none')}</p>`)+(res.length>MAX?`<p class="hint">${MAX}/${res.length}</p>`:'')};
  $('e-fy').onchange=draw;$('e-q').oninput=draw;draw()}
+async function clearExit(){const ed=D.students.find(x=>x.id==sel.ed);if(!ed)return;if(!await ask(Z('Annuler la sortie et réintégrer cet élève ?','Cancel the exit and re-enroll this student?','إلغاء المغادرة وإعادة هذا التلميذ؟')))return;const {error}=await sb.from('students').update({exit_date:null,exit_reason:null,exit_class_id:null,exit_destination:null}).eq('id',ed.id);if(error)return note(error.message);await load();render()}
 async function saveStudent(){
  const ed=sel.ed?D.students.find(s=>s.id==sel.ed):null,sp=id=>$(id).value.trim().replace(/\s+/g,' ');
  const bad=(i,msg,id)=>{openAcc(i);note(msg).then(()=>{const e=$(id);if(e)e.focus()})};
@@ -336,14 +340,17 @@ async function saveStudent(){
  if(!pTel)return bad(1,Z('Père : le contact est obligatoire.','Father: contact is required.','الأب: رقم الاتصال مطلوب.'),'p-tel');
  for(const [id,who] of [['p-tel',Z('Père','Father','الأب')],['m-tel',Z('Mère','Mother','الأم')],['t-tel',Z('Tuteur','Guardian','الوصي')],['u-tel',Z('Urgence','Emergency','الطوارئ')]]){const v=cleanTel($(id).value);if(v&&!telOk(v))return bad(1,who+' : '+Z('contact invalide (8 à 15 chiffres).','invalid contact (8 to 15 digits).','رقم غير صالح (8 إلى 15 رقمًا).'),id)}
  if(D.students.some(s=>s.id!=(ed&&ed.id)&&s.birth_date==dn&&(s.nom||'').toLowerCase()==nom.toLowerCase()&&(s.prenom||'').toLowerCase()==pre.toLowerCase()))return bad(0,Z('Cet élève existe déjà (même nom, prénom et date de naissance). Utilisez Modifier pour le réinscrire.','This student already exists (same name and date of birth). Use Edit to re-enroll.','هذا التلميذ موجود. استخدم تعديل لإعادة تسجيله.'),'e-nom');
- const rec={nom,prenom:pre,name:nom+' '+pre,year,birth_date:dn,birth_place:sp('e-ln'),mother_tongue:sp('e-lang'),sex,class_id:cid,enroll_date:di,status:stat,origin_school:stat=='Nouveau'?sp('e-orig'):'',repeater:$('e-red').value=='1',reduction:parseInt($('e-rb').value||'0',10)||0,reduction_reason:$('e-mot').value,dropped:$('e-aban').value=='1',
+ const xd=$('x-date').value,xw=sp('x-why'),xcl=$('x-cls').value,xds=sp('x-dest');
+ if(xd){if(!/^\d{4}-\d{2}-\d{2}$/.test(xd)||xd>today())return bad(3,Z('Date de départ invalide.','Invalid exit date.','تاريخ مغادرة غير صالح.'),'x-date');if(!xw)return bad(3,Z('Le motif de départ est obligatoire.','The exit reason is required.','سبب المغادرة مطلوب.'),'x-why');if(!xcl)return bad(3,Z('Choisissez le niveau et la classe au départ.','Choose the level and class at exit.','اختر المرحلة والقسم عند المغادرة.'),'x-cls')}
+ else if(xw||xds)return bad(3,Z('Indiquez la date de départ.','Enter the exit date.','أدخل تاريخ المغادرة.'),'x-date');
+ const rec={nom,prenom:pre,name:nom+' '+pre,year,birth_date:dn,birth_place:sp('e-ln'),mother_tongue:sp('e-lang'),sex,class_id:cid,enroll_date:di,status:stat,origin_school:stat=='Nouveau'?sp('e-orig'):'',repeater:$('e-red').value=='1',reduction:parseInt($('e-rb').value||'0',10)||0,reduction_reason:$('e-mot').value,exit_date:xd||null,exit_reason:xd?xw:null,exit_class_id:xd?xcl:null,exit_destination:xd?xds:null,
   father:{prenom:pPre,adresse:sp('p-adr'),contact:pTel,profession:sp('p-prof')},mother:{nom:sp('m-nom'),contact:cleanTel($('m-tel').value),profession:sp('m-prof')},guardian:{nom:sp('t-nom'),lien:sp('t-lien'),contact:cleanTel($('t-tel').value),profession:sp('t-prof'),adresse:sp('t-adr')},emergency:{nom:sp('u-nom'),contact:cleanTel($('u-tel').value),lien:sp('u-lien')},
   docs:{extrait:$('d-ext').checked,photos:$('d-pho').checked,bulletin:$('d-bul').checked,livret:$('d-liv').checked}};
  if(photoDirty||!ed)rec.photo=curPhoto||null;
  if(ed){
   if(ed.year&&year!=ed.year){
    if(!await ask(Z(`Promotion / réinscription : « ${clsLabel(ed.class_id)} » (${ed.year}) devient « ${clsLabel(cid)} » (${year}).\nL’élève reste aussi dans l’ancienne classe pour ${ed.year}. Le matricule ne change pas.`,`Promotion / re-enrollment: "${clsLabel(ed.class_id)}" (${ed.year}) becomes "${clsLabel(cid)}" (${year}).\nThe student stays in the old class for ${ed.year}. The student ID does not change.`,`ترقية / إعادة تسجيل: «${clsLabel(ed.class_id)}» (${ed.year}) تصبح «${clsLabel(cid)}» (${year}).\nيبقى التلميذ في القسم القديم لسنة ${ed.year}. رقم التسجيل لا يتغير.`)))return;
-   rec.history=(ed.history||[]).concat([{year:ed.year,class_id:ed.class_id,enroll_date:ed.enroll_date,status:ed.status,repeater:ed.repeater,reduction:ed.reduction,reduction_reason:ed.reduction_reason,dropped:ed.dropped}]);rec.status='Ancien';rec.origin_school=''}
+   rec.history=(ed.history||[]).concat([{year:ed.year,class_id:ed.class_id,enroll_date:ed.enroll_date,status:ed.status,repeater:ed.repeater,reduction:ed.reduction,reduction_reason:ed.reduction_reason}]);rec.status='Ancien';rec.origin_school=''}
   const {error}=await sb.from('students').update(rec).eq('id',ed.id);
   if(error)return note(error.message);
   sel.ed=null;sel.pre=null;await load();render();window.scrollTo(0,0);note(Z('Élève ','Student ','التلميذ ')+(ed.matricule||'')+' '+t('saved'));return}
@@ -360,7 +367,7 @@ function tsAll(){document.querySelectorAll('.chk[data-c]:not(.hidden) .tsc').for
 const tsPicked=()=>[...document.querySelectorAll('.tsc:checked')].map(e=>e.value);
 async function saveTs(){const uid=sel.ut,ids=tsPicked();if(!ids.length)return note(Z('Cochez au moins une matière.','Tick at least one subject.','حدد مادة واحدة على الأقل.'));
  let r=await sb.from('teacher_subjects').delete().eq('user_id',uid);if(r.error)return note(r.error.message);
- r=await sb.from('teacher_subjects').insert(ids.map(id=>({school_id:user.sid,user_id:uid,subject_id:id})));if(r.error)return note(r.error.message);
+ r=await sb.from('teacher_subjects').insert(ids.map(id=>({school_id:user.sid,user_id:uid,subject_id:id,teacher_name:((D.staff.find(x=>x.user_id==uid)||{}).full_name||'')})));if(r.error)return note(r.error.message);
  sel.ut=null;await load();render();window.scrollTo(0,0);note(t('saved'))}
 async function addStaff(){
  const role=$('rl').value,us=$('us').value.trim().toLowerCase(),pw=$('pw2').value,sj=tsPicked();
@@ -373,7 +380,7 @@ async function addStaff(){
  if(error||!u.user)return note(error?error.message:'Error');
  const {error:e3}=await sb.from('profiles').insert({user_id:u.user.id,school_id:user.sid,role,full_name:fn,username:us,student_id:stu?stu.id:null,personnel_id:pid});
  if(e3)return note(e3.message);
- if(role=='teacher'){const {error:e4}=await sb.from('teacher_subjects').insert(sj.map(id=>({school_id:user.sid,user_id:u.user.id,subject_id:id})));if(e4)note(e4.message)}
+ if(role=='teacher'){const {error:e4}=await sb.from('teacher_subjects').insert(sj.map(id=>({school_id:user.sid,user_id:u.user.id,subject_id:id,teacher_name:fn})));if(e4)note(e4.message)}
  await load();render()}
 async function resetPw(uid){const pw=await dlg(t('pw')+' (6+)',{input:1});if(!pw)return;if(pw.length<6)return note(t('chk2'));const {error}=await sb.rpc('set_staff_password',{uid,pw});note(error?error.message:t('saved'))}
 async function delStaff(uid){const p=D.staff.find(x=>x.user_id==uid)||{};if(!await ask(`${t('delq')} « ${p.full_name||''} » ?`))return;const {error}=await sb.rpc('delete_staff',{uid});if(error)note(error.message);await load();render()}
@@ -415,9 +422,13 @@ function chk(el,mn,mx){const v=el.value;if(v!==''){const n=numv(v);if(!/^-?[0-9]
 async function setGrade(e,s,v,tm,ts,mn,mx){const k=`${e}_${s}_${tm}_${ts}`,n=numv(v);
  if(String(v).trim()===''||n==null){delete G[k];await sb.from('grades').delete().eq('student_id',e).eq('subject_id',s).eq('term',tm).eq('test',ts);return}
  const z=Math.max(mn,Math.min(mx,n));G[k]=z;const {error}=await sb.from('grades').upsert({school_id:user.sid,student_id:e,subject_id:s,term:tm,test:ts,value:z},{onConflict:'student_id,subject_id,term,test'});if(error)note(error.message)}
+const tNames=sid=>[...new Set(D.ts.filter(x=>x.subject_id==sid).map(x=>x.teacher_name||(D.staff.find(p=>p.user_id==x.user_id)||{}).full_name||'').filter(Boolean))].join(', ');
+function footText(){const d=new Date(),q=n=>String(n).padStart(2,'0'),tm=`${q(d.getHours())}:${q(d.getMinutes())}:${q(d.getSeconds())}`,dt=d.toLocaleDateString(lang=='ar'?'ar':lang=='en'?'en-GB':'fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+ return Z(`Développé par Gandal Solutions | +224 623 36 60 69 | imprimé le ${dt} à ${tm}`,`Developed by Gandal Solutions | +224 623 36 60 69 | printed on ${dt} at ${tm}`,`تطوير Gandal Solutions | +224 623 36 60 69 | طُبع في ${dt} الساعة ${tm}`)}
+window.addEventListener('beforeprint',()=>document.querySelectorAll('.pfoot').forEach(e=>e.textContent=footText()));
 const mean=a=>{a=a.filter(z=>z!=null);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null};
 function notesView(){
- const C=D.classes.map(cl),S=D.subjects.filter(x=>x.class_id==sel.c),E=D.students.filter(x=>x.class_id==sel.c),sn=s=>s.nom?s.nom+' '+(s.prenom||''):s.name,Ex=E.map(s=>({id:s.id,name:sn(s)}));
+ const C=D.classes.map(cl),S=D.subjects.filter(x=>x.class_id==sel.c),E=D.students.filter(x=>x.class_id==sel.c&&!x.exit_date),sn=s=>s.nom?s.nom+' '+(s.prenom||''):s.name,Ex=E.map(s=>({id:s.id,name:sn(s)})),Em=E.map(s=>({id:s.id,name:s.matricule||sn(s)}));
  const g=sel.c?gOf(sel.c):null,noG=sel.c&&!g?`<p class="err">${Z('Configurez d’abord la structure des notes de ce niveau (Les notes › Structure des notes).','First set up the grading structure for this level (Grades › Grading structure).','اضبط أولاً هيكل النقاط لهذه المرحلة (النقاط › هيكل النقاط).')}</p>`:'';
  const annL=Z('Annuelle','Annual','سنوية');
  if(tab=='grades'){
@@ -429,14 +440,37 @@ function notesView(){
     h+=`<p class="hint">${fmt(mn)} – ${fmt(mx)}</p>`+(E.map(e=>{const val=G[`${e.id}_${sel.s}_${tm}_${ts}`],vs=val==null?'':String(val).replace('.',lang=='en'?'.':',');return `<div class="li"><span>${esc(sn(e))}</span><input type="text" inputmode="decimal" style="width:90px;flex:none" oninput="chk(this,${mn},${mx})" data-old="${vs}" value="${vs}" onchange="setGrade('${e.id}','${sel.s}',this.value,${tm},${ts},${mn},${mx})"></div>`}).join('')||`<p class="mu">${t('none')}</p>`)}}
   return h+`</div>`}
  let r='';
- if(sel.e&&g){const sp=isSP(g.type),mn=+g.min_score,mx=+g.max_score,cols=sp?g.periods.map(p=>p.name):g.periods[0].tests;
-  const rows=S.map(s=>{const per=g.periods.map((p,i)=>p.tests.map((_,j)=>G[`${sel.e}_${s.id}_${i+1}_${j+1}`])),pa=per.map(mean);
-   const an=g.annual=='avg_all'?mean([].concat(...per)):g.annual=='avg_periods'?mean(pa):(G[`${sel.e}_${s.id}_0_0`]==null?null:G[`${sel.e}_${s.id}_0_0`]);
-   return {s,cells:sp?pa:per[0],an}});
-  const wavg=f=>{let a=0,b=0;rows.forEach(x=>{const v=f(x);if(v!=null){a+=v*x.s.coef;b+=+x.s.coef}});return b?a/b:null};
-  const gen=wavg(x=>x.an),mm=gen==null?[]:mentRows(g).filter(m=>gen>=m.from-1e-9).sort((a,b)=>b.from-a.from),mention=mm.length?mm[0].label:'';
-  r=`<div class="card"><h3>${esc(user.name)}</h3><p>${esc(nm(Ex,sel.e))} — ${esc(nm(C,sel.c))}</p><div style="overflow-x:auto"><table><tr><th>${t('subj')}</th><th>${t('coef')}</th>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}<th>${annL}</th></tr>${rows.map(x=>`<tr><td>${esc(x.s.name)}</td><td>${x.s.coef}</td>${x.cells.map(v=>`<td>${fmt(v)}</td>`).join('')}<td><b>${fmt(x.an)}</b></td></tr>`).join('')}<tr><th colspan="2">${t('avg')}</th>${cols.map((_,c)=>`<th>${fmt(wavg(x=>x.cells[c]))}</th>`).join('')}<th>${fmt(gen)}</th></tr></table></div><h3>${t('avg')}: ${fmt(gen)} / ${fmt(mx)}${gen!=null?` — ${gen>=passOf(g)?t('passed'):t('failed')}`:''}</h3>${mention?`<p><b>${esc(mention)}</b></p>`:''}<button class="btn noprint" onclick="window.print()">${t('print')}</button></div>`}
- return (user.role=='parent'?'':`<div class="card noprint"><div class="row"><select onchange="sel.e=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(Ex,sel.e)}</select></div>${noG}</div>`)+r}
+ const spG=g&&isSP(g.type),allL=g?(spG?(g.type=='semestre'?Z('Tous les semestres','All semesters','كل السداسيات'):Z('Tous les trimestres','All trimesters','كل الثلاثيات')):Z('Toutes les évaluations','All evaluations','كل التقويمات')):'';
+ const uni=sel.rm=='uni',rpv=uni?((sel.rp&&sel.rp!='all')?sel.rp:'ann'):(sel.rp||'all');
+ const rpSel=g?`<select onchange="pick('rp',this.value)">${spG?g.periods.map((p,i)=>`<option value="${i+1}" ${rpv==String(i+1)?'selected':''}>${esc(p.name)}</option>`).join(''):''}<option value="ann" ${rpv=='ann'?'selected':''}>${Z('Annuel','Annual','سنوي')}</option>${uni?'':`<option value="all" ${rpv=='all'?'selected':''}>${allL}</option>`}</select>`:'',rmSel=g?`<select onchange="pick('rm',this.value)"><option value="inc" ${!uni?'selected':''}>${Z('Inclusif','Inclusive','شامل')}</option><option value="uni" ${uni?'selected':''}>${Z('Unique','Unique','مفرد')}</option></select>`:'';
+ if(sel.e&&g){
+  const sp=spG,np=g.periods.length,mn=+g.min_score,mx=+g.max_score;
+  let rp=rpv;if(!sp&&rp!='ann')rp='all';if(sp&&rp!='ann'&&rp!='all'&&!(+rp>=1&&+rp<=np))rp='all';
+  const calc=id=>S.map(s=>{const per=g.periods.map((p,i)=>p.tests.map((_,j)=>G[`${id}_${s.id}_${i+1}_${j+1}`])),pa=per.map(mean),d=G[`${id}_${s.id}_0_0`],an=g.annual=='avg_all'?mean([].concat(...per)):g.annual=='avg_periods'?mean(pa):(d==null?null:d);return {s,per,pa,an}});
+  const wav=(rows,f)=>{let a=0,b=0;rows.forEach(x=>{const v=f(x);if(v!=null){a+=v*x.s.coef;b+=+x.s.coef}});return b?a/b:null};
+  const metric=rows=>(rp=='all'||rp=='ann')?wav(rows,x=>x.an):wav(rows,x=>x.pa[+rp-1]);
+  const rows=calc(sel.e),gen=metric(rows);
+  let heads,cellsOf;
+  if(rp=='ann'){heads=[annL];cellsOf=x=>[x.an]}
+  else if(rp=='all'){heads=(sp?g.periods.map(p=>p.name):g.periods[0].tests).concat([annL]);cellsOf=x=>(sp?x.pa:x.per[0]).concat([x.an])}
+  else{const pi=+rp-1;heads=g.periods[pi].tests.concat([Z('Moyenne','Average','المعدل')]);cellsOf=x=>x.per[pi].concat([x.pa[pi]])}
+  const mm=gen==null?[]:mentRows(g).filter(m=>gen>=m.from-1e-9).sort((a,b)=>b.from-a.from),mention=mm.length?mm[0].label:'';
+  const stu=D.students.find(x=>x.id==sel.e)||{},mates=E,showRank=user.role!='parent';
+  let rank=null;if(showRank&&gen!=null){const all=mates.map(s=>metric(calc(s.id))).filter(v=>v!=null);rank=1+all.filter(v=>v>gen+1e-9).length}
+  const ordn=(n,sx)=>lang=='fr'?(n==1?(sx=='F'?'1ère':'1er'):n+'e'):lang=='en'?n+(([11,12,13].includes(n%100))?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th')):(n==1?(sx=='F'?'الأولى':'الأول'):String(n));
+  const plabel=rp=='ann'?Z('Annuel','Annual','سنوي'):rp=='all'?allL:g.periods[+rp-1].name,sc=SC();
+  const head=`<div class="bhead">${sc.logo?`<img src="${sc.logo}" alt="">`:''}<div><b style="font-size:1.1rem">${esc(sc.name||user.name)}</b><br>${esc(sc.address||'')}${sc.address?'<br>':''}${[sc.phone,sc.email].filter(Boolean).map(esc).join(' · ')}</div></div><h3 style="text-align:center;margin:10px 0 2px">${Z('BULLETIN DE NOTES','REPORT CARD','كشف النقاط')} — ${esc(plabel)}</h3><p style="text-align:center;margin:0 0 10px">${Z('Année scolaire','School year','السنة الدراسية')} : <b>${esc(stu.year||'')}</b></p>`;
+  const incTbl=`<div style="overflow-x:auto"><table><tr><th>${t('subj')}</th><th>${t('coef')}</th>${heads.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${rows.map(x=>`<tr><td>${esc(x.s.name)}</td><td>${x.s.coef}</td>${cellsOf(x).map((v,i,a)=>i==a.length-1?`<td><b>${fmt(v)}</b></td>`:`<td>${fmt(v)}</td>`).join('')}</tr>`).join('')}<tr><th colspan="2">${t('avg')}</th>${heads.map((_,c)=>`<th>${fmt(wav(rows,x=>cellsOf(x)[c]))}</th>`).join('')}</tr></table></div>`;
+  let uniTbl='';
+  if(uni){
+   const valOf=x=>rp=='ann'?x.an:x.pa[+rp-1],cls=showRank?mates.map(m=>({id:m.id,rows:calc(m.id)})):[{id:sel.e,rows}],rk=(vals,v)=>v==null?null:1+vals.filter(z=>z>v+1e-9).length;
+   const trs=rows.map((x,i)=>{const mine=valOf(x),vals=showRank?cls.map(c=>valOf(c.rows[i])).filter(v=>v!=null):[],ts=((rp=='ann'&&g.annual=='direct')?[x.an]:(rp=='ann'?[].concat(...x.per):x.per[+rp-1])).filter(v=>v!=null),lo=ts.length?Math.min(...ts):null,hi=ts.length?Math.max(...ts):null,r_=showRank?rk(vals,mine):null,tn=tNames(x.s.id);
+    return `<tr><td>${esc(x.s.name)}${tn?`<br><span class="tn">${esc(tn)}</span>`:''}</td><td>${x.s.coef}</td><td>${fmt(lo)}</td><td>${fmt(hi)}</td><td><b>${fmt(mine)}</b></td><td>${r_==null?'-':ordn(r_,stu.sex)}</td></tr>`}).join('');
+   const gens=showRank?cls.map(c=>metric(c.rows)).filter(v=>v!=null):[],tc=rows.reduce((a,x)=>a+(valOf(x)!=null?+x.s.coef:0),0);
+   uniTbl=`<div style="overflow-x:auto"><table class="ut"><tr><th>${t('subj')}</th><th>${Z('Coef','Coef','المعامل')}</th><th>${Z('Min','Min','الأدنى')}</th><th>${Z('Max','Max','الأقصى')}</th><th>${Z('Moyenne','Average','المعدل')}</th><th>${Z('Rang','Rank','الترتيب')}</th></tr>${trs}<tr><th>${Z('Moyenne générale','Overall average','المعدل العام')}</th><th></th><th></th><th></th><th>${fmt(gen)}</th><th></th></tr></table></div>`}
+  r=`<div class="card">${head}<p><b>${esc(nm(Ex,sel.e))}</b>${stu.matricule?' · '+esc(stu.matricule):''}<br>${esc(nm(C,sel.c))}</p>${uni?uniTbl:incTbl}<h3>${t('avg')}: ${fmt(gen)} / ${fmt(mx)}${gen!=null?` — ${gen>=passOf(g)?t('passed'):t('failed')}`:''}</h3>${mention?`<p><b>${esc(mention)}</b></p>`:''}${showRank?`<p>${Z('Effectif de la classe','Students in class','عدد التلاميذ في القسم')} : <b>${mates.length}</b><br>${Z('Rang','Position','الترتيب')} : <b>${rank==null?'-':ordn(rank,stu.sex)}</b></p>`:''}<button class="btn noprint" onclick="window.print()">${t('print')}</button>${uni?`<div class="pfoot">${footText()}</div>`:''}</div>`}
+ return (user.role=='parent'?`<div class="card noprint"><div class="row">${rpSel}${rmSel}</div></div>`:`<div class="card noprint"><div class="row"><select onchange="sel.e=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(Em,sel.e)}</select>${rpSel}${rmSel}</div>${noG}</div>`)+r}
+
 /* ---- render ---- */
 function view(){
  if(user.admin)return schoolsView();
