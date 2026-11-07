@@ -69,7 +69,8 @@ nav button.active{color:var(--ink2);font-weight:700;border-top-color:var(--ac);b
 #dlg .acts{display:flex;gap:8px;justify-content:flex-end;padding:0 14px 14px}
 #dlg .acts button{padding:8px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--card);cursor:pointer}
 #dlg .acts .btn{width:auto;margin:0;min-height:0;background:var(--ink);color:#fff;border:2px solid var(--ink)}
-@media print{header,nav,.noprint{display:none!important}.card{border:0}.pfoot{position:fixed;bottom:6mm;left:0;right:0;margin:0}}
+@page{margin:0}
+@media print{header,nav,.noprint{display:none!important}body{padding:0!important}main{padding:0!important;max-width:none!important}.card{border:0!important;padding:12mm 14mm 22mm!important;margin:0!important}.pfoot{position:fixed;bottom:7mm;left:0;right:0;margin:0}.tpage{break-after:page;page-break-after:always}.tpage:last-child{break-after:auto;page-break-after:auto}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
@@ -507,7 +508,7 @@ function ncView(){
   const list=D.students.filter(s=>inYear(s)&&(!s.exit_date||cols.some(c=>val(s,c)!=null))).sort((a,b)=>(a.matricule||'').localeCompare(b.matricule||'')),grp=pv=='T'&&pers.length>1,wide=cols.length>8;
   const c0=D.classes.find(c=>c.id==sel.nc)||{},plab=pv=='T'?Z('Toutes les périodes','All periods','كل الفترات'):pers[0].name;
   const th=grp?`<tr><th rowspan="2">${Z('N°','No','رقم')}</th><th rowspan="2">${t('matr')}</th><th rowspan="2">${Z('Nom de l’élève','Student name','اسم التلميذ')}</th>${pers.map(p=>`<th colspan="${p.tests.length}">${esc(p.name)}</th>`).join('')}</tr><tr>${cols.map(c=>`<th>${esc(c.name)}</th>`).join('')}</tr>`:`<tr><th>${Z('N°','No','رقم')}</th><th>${t('matr')}</th><th>${Z('Nom de l’élève','Student name','اسم التلميذ')}</th>${cols.map(c=>`<th>${esc(c.name)}</th>`).join('')}</tr>`;
-  h+=`<style>@page{size:A4 ${wide?'landscape':'portrait'};margin:12mm}</style><div class="card nsh">${schoolHead()}<h3 style="text-align:center;margin:10px 0 2px">${Z('NOTES NON CALCULÉES','UNCALCULATED SCORES','النقاط غير المحتسبة')} — ${esc(sub.name)}</h3><p class="nin">${Z('Année scolaire','School year','السنة الدراسية')} : <b>${esc(yr)}</b> · ${t('level')} : <b>${esc(nm(D.levels,g.level_id))}</b> · ${t('cls')} : <b>${esc(c0.name||'')}</b> · ${Z('Période','Period','الفترة')} : <b>${esc(plab)}</b></p><p class="nin">${t('coef')} : <b>${sub.coef}</b> · ${Z('Notes de','Scores from','النقاط من')} ${fmt(+g.min_score)} ${Z('à','to','إلى')} ${fmt(+g.max_score)}</p>${list.length?`<div style="overflow-x:auto"><table class="ntab"><thead>${th}</thead><tbody>${list.map((s,i)=>`<tr><td class="n">${i+1}</td><td><b>${esc(s.matricule||'—')}</b></td><td class="nm">${esc(sn(s))}</td>${cols.map(c=>`<td class="sc">${fv(val(s,c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:`<p class="hint">${Z('Aucun élève inscrit dans cette classe pour cette année.','No student enrolled in this class for this year.','لا يوجد تلاميذ في هذا القسم لهذه السنة.')}</p>`}<button class="btn noprint" onclick="window.print()">${t('print')}</button><div class="pfoot">${footText()}</div></div>`}
+  h+=`<style>@page{size:A4 ${wide?'landscape':'portrait'};margin:0}</style><div class="card nsh">${schoolHead()}<h3 style="text-align:center;margin:10px 0 2px">${Z('NOTES NON CALCULÉES','UNCALCULATED SCORES','النقاط غير المحتسبة')} — ${esc(sub.name)}</h3><p class="nin">${Z('Année scolaire','School year','السنة الدراسية')} : <b>${esc(yr)}</b> · ${t('level')} : <b>${esc(nm(D.levels,g.level_id))}</b> · ${t('cls')} : <b>${esc(c0.name||'')}</b> · ${Z('Période','Period','الفترة')} : <b>${esc(plab)}</b></p><p class="nin">${t('coef')} : <b>${sub.coef}</b> · ${Z('Notes de','Scores from','النقاط من')} ${fmt(+g.min_score)} ${Z('à','to','إلى')} ${fmt(+g.max_score)}</p>${list.length?`<div style="overflow-x:auto"><table class="ntab"><thead>${th}</thead><tbody>${list.map((s,i)=>`<tr><td class="n">${i+1}</td><td><b>${esc(s.matricule||'—')}</b></td><td class="nm">${esc(sn(s))}</td>${cols.map(c=>`<td class="sc">${fv(val(s,c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:`<p class="hint">${Z('Aucun élève inscrit dans cette classe pour cette année.','No student enrolled in this class for this year.','لا يوجد تلاميذ في هذا القسم لهذه السنة.')}</p>`}<button class="btn noprint" onclick="window.print()">${t('print')}</button><div class="pfoot">${footText()}</div></div>`}
  return h}
 /* ---- helpers: empty states and copying subjects between classes ---- */
 function emptyHint(){const ys=allYears().filter(y=>y!=WY&&D.students.some(s=>enrolled(s,sel.c,y)&&!s.exit_date));
@@ -526,10 +527,43 @@ async function copySubjects(){const src=$('cp-src').value,dst=$('cp-dst').value;
  if(!rows.length)return note(Z('Rien à copier : ces matières existent déjà.','Nothing to copy: these subjects already exist.','لا شيء لنسخه: المواد موجودة.'));
  if(!await ask(Z(`Copier ${rows.length} matière(s) vers ${tg.length} classe(s) ?`,`Copy ${rows.length} subject(s) to ${tg.length} class(es)?`,`نسخ ${rows.length} مادة إلى ${tg.length} قسم؟`)))return;
  const r=await run(sb.from('subjects').insert(rows));if(!r.error)note(Z(`${rows.length} matière(s) copiée(s).`,`${rows.length} subject(s) copied.`,`تم نسخ ${rows.length} مادة.`))}
+/* ---- Transcription (all subjects of one student, A4) ---- */
+function trPick(k,v){if(k=='ny')return setWY(v);sel[k]=v||null;({tl:['tp','tc','tm','tb'],tc:['tm','tb']}[k]||[]).forEach(x=>sel[x]=null);render()}
+const trSel=(id,label,o,v,ph,dis)=>`<label>${label}</label><select ${dis?'disabled':''} onchange="trPick('${id}',this.value)"><option value="">${ph}</option>${o.map(x=>`<option value="${esc(x.v)}" ${String(x.v)==String(v)?'selected':''}>${esc(x.t)}</option>`).join('')}</select>`;
+function trCtx(){const g=sel.tl?D.grading.find(x=>x.level_id==sel.tl):null;if(!g||!sel.tc||!sel.tp)return null;const ps=ncPers(g),pers=sel.tp=='T'?ps:ps.filter(p=>p.v==sel.tp);if(!pers.length)return null;
+ const cols=[];pers.forEach(p=>p.tests.forEach((n,j)=>cols.push({term:p.term,test:p.term==0?0:j+1,name:n})));
+ return {g,pers,cols,grp:sel.tp=='T'&&pers.length>1,subs:D.subjects.filter(s=>s.class_id==sel.tc),c0:D.classes.find(c=>c.id==sel.tc)||{},wide:cols.length+1>8}}
+function trSheet(stu,cx){
+ const r2=n=>Math.round(n*100)/100,sn=stu.nom?stu.nom+' '+(stu.prenom||''):stu.name;let grand=null;const ct=cx.cols.map(()=>null);
+ const rows=cx.subs.map(sub=>{let tot=null;const sc=cx.cols.map((c,k)=>{const v=G[`${stu.id}_${sub.id}_${c.term}_${c.test}`];if(v!=null){tot=r2((tot||0)+v);ct[k]=r2((ct[k]||0)+v);grand=r2((grand||0)+v)}return v});return {sub,sc,tot}});
+ const th=cx.grp?`<tr><th rowspan="2">${Z('N°','No','رقم')}</th><th rowspan="2">${t('subj')}</th>${cx.pers.map(p=>`<th colspan="${p.tests.length}">${esc(p.name)}</th>`).join('')}<th rowspan="2">${Z('Total','Total','المجموع')}</th></tr><tr>${cx.cols.map(c=>`<th>${esc(c.name)}</th>`).join('')}</tr>`:`<tr><th>${Z('N°','No','رقم')}</th><th>${t('subj')}</th>${cx.cols.map(c=>`<th>${esc(c.name)}</th>`).join('')}<th>${Z('Total','Total','المجموع')}</th></tr>`;
+ const plab=sel.tp=='T'?Z('Toutes les périodes','All periods','كل الفترات'):cx.pers[0].name;
+ return `${schoolHead()}<p class="nin" style="margin-top:10px"><b>${Z('Élève','Student','التلميذ')} : ${esc(sn)} · ${t('matr')} : ${esc(stu.matricule||'—')}</b></p><h3 style="text-align:center;margin:6px 0 2px">${Z('TRANSCRIPTION DES NOTES','TRANSCRIPT OF SCORES','كشف النقاط التفصيلي')}</h3><p class="nin">${Z('Année scolaire','School year','السنة الدراسية')} : <b>${esc(WY)}</b> · ${t('level')} : <b>${esc(nm(D.levels,cx.g.level_id))}</b> · ${t('cls')} : <b>${esc(cx.c0.name||'')}</b> · ${Z('Période','Period','الفترة')} : <b>${esc(plab)}</b></p><p class="nin">${Z('Notes de','Scores from','النقاط من')} ${fmt(+cx.g.min_score)} ${Z('à','to','إلى')} ${fmt(+cx.g.max_score)}</p>`+
+ (rows.length?`<div style="overflow-x:auto"><table class="ntab"><thead>${th}</thead><tbody>${rows.map((r,i)=>`<tr><td class="n">${i+1}</td><td class="nm"><b>${esc(r.sub.name)}</b></td>${r.sc.map(v=>`<td class="sc">${fv(v)}</td>`).join('')}<td class="sc"><b>${fv(r.tot)}</b></td></tr>`).join('')}<tr class="ttot"><th colspan="2">${Z('Total','Total','المجموع')}</th>${ct.map(v=>`<th>${fv(v)}</th>`).join('')}<th>${fv(grand)}</th></tr></tbody></table></div>`:`<p class="hint">${Z('Aucune matière pour cette classe.','No subject for this class.','لا توجد مواد لهذا القسم.')}</p>`)}
+function trBatch(m){sel.tb=m;render();window.scrollTo(0,0)}
+function trView(){
+ const lvls=D.levels.filter(l=>D.grading.some(g=>g.level_id==l.id)),g=sel.tl?D.grading.find(x=>x.level_id==sel.tl):null,ps=g?ncPers(g):[];
+ if(g&&ps.length==1&&!sel.tp)sel.tp=ps[0].v;
+ const cls=sel.tl?D.classes.filter(c=>c.level_id==sel.tl):[],stus=sel.tc?D.students.filter(s=>enrolled(s,sel.tc,WY)).sort((a,b)=>(a.matricule||'').localeCompare(b.matricule||'')):[],cx=trCtx();
+ let h=`<div class="card noprint"><h2>${t('tr')}</h2>`+(lvls.length?
+  `<label>${Z('Année scolaire','School year','السنة الدراسية')}</label>${ySel()}`+
+  trSel('tl',t('level'),lvls.map(l=>({v:l.id,t:l.name})),sel.tl,Z('— Choisir le niveau —','— Choose the level —','— اختر المرحلة —'))+
+  (ps.length>1?trSel('tp',Z('Période','Period','الفترة'),[{v:'T',t:Z('Tous','All','الكل')}].concat(ps.map(p=>({v:p.v,t:p.name}))),sel.tp,Z('— Choisir la période —','— Choose the period —','— اختر الفترة —')):'')+
+  trSel('tc',t('cls'),cls.map(c=>({v:c.id,t:c.name})),sel.tc,g?Z('— Choisir la classe —','— Choose the class —','— اختر القسم —'):Z('Choisissez d’abord le niveau','Choose the level first','اختر المرحلة أولاً'),!g)+
+  trSel('tm',Z('Matricule de l’élève','Student ID','رقم تسجيل التلميذ'),stus.map(s=>({v:s.id,t:(s.matricule||'—')+(s.exit_date?' · '+Z('sorti(e)','left','غادر'):'')})),sel.tm,sel.tc?(stus.length?Z('— Choisir le matricule —','— Choose the student ID —','— اختر رقم التسجيل —'):Z('Aucun élève dans cette classe pour cette année','No student in this class for this year','لا تلاميذ في هذا القسم لهذه السنة')):Z('Choisissez d’abord la classe','Choose the class first','اختر القسم أولاً'),!sel.tc)
+  :`<p class="hint">${Z('Définissez d’abord la structure des notes d’un niveau (Les notes › Structure des notes).','First set up the grading structure of a level (Grades › Grading structure).','اضبط أولاً هيكل النقاط لمرحلة.')}</p>`)+`</div>`;
+ if(!cx)return h;
+ const pg=`<style>@page{size:A4 ${cx.wide?'landscape':'portrait'};margin:0}</style>`;
+ if(cx&&stus.length)h+=`<div class="card noprint"><div class="row2"><button class="btn alt" onclick="trBatch('act')">${Z('Imprimer les élèves actifs','Print active students','طباعة التلاميذ النشطين')}</button><button class="btn alt" onclick="trBatch('all')">${Z('Imprimer tous les élèves','Print all students','طباعة كل التلاميذ')}</button></div></div>`;
+ if(sel.tb){const list=stus.filter(s=>sel.tb=='all'||!s.exit_date);
+  return h+pg+`<div class="card noprint"><p class="hint" style="margin-top:0"><b>${list.length}</b> ${Z('transcription(s) à imprimer','transcript(s) to print','كشف للطباعة')} · ${sel.tb=='all'?Z('tous les élèves','all students','كل التلاميذ'):Z('élèves actifs','active students','التلاميذ النشطون')}</p><div class="row2"><button class="btn alt" onclick="sel.tb=null;render()">${Z('Retour','Back','رجوع')}</button><button class="btn" onclick="window.print()">${t('print')}</button></div></div><div class="pfoot">${footText()}</div>`+list.map(s=>`<div class="card nsh tpage">${trSheet(s,cx)}</div>`).join('')}
+ const stu=stus.find(s=>s.id==sel.tm);
+ if(stu)h+=pg+`<div class="card nsh">${trSheet(stu,cx)}<button class="btn noprint" onclick="window.print()">${t('print')}</button><div class="pfoot">${footText()}</div></div>`;
+ return h}
 /* ---- render ---- */
 function view(){
  if(user.admin)return schoolsView();
- return ({home:homeView,levels:levelsView,classes:classesView,subjects:subjectsView,students:studentsView,users:staffView,personnels:personnelView,settings:settingsView,grades:notesView,report:notesView,nc:ncView}[tab]||(()=>`<div class="card">${t('soon')}</div>`))()}
+ return ({home:homeView,levels:levelsView,classes:classesView,subjects:subjectsView,students:studentsView,users:staffView,personnels:personnelView,settings:settingsView,grades:notesView,report:notesView,nc:ncView,tr:trView}[tab]||(()=>`<div class="card">${t('soon')}</div>`))()}
 function render(){
  document.documentElement.lang=lang;document.documentElement.dir=lang=='ar'?'rtl':'ltr';$('lg').value=lang;
  $('hn').textContent=(user&&user.name)||'Gandal Écoles';
