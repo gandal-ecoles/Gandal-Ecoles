@@ -85,7 +85,7 @@ const T={
 fr:{login:"Connexion",id:"Identifiant",pw:"Mot de passe",go:"Se connecter",out:"Déconnexion",bad:"Identifiant ou mot de passe incorrect",noprof:"Compte non autorisé",susp:"École suspendue",chk:"Identifiant (lettres/chiffres), nom, mot de passe (6+)",classes:"Classes",subjects:"Matières",students:"Élèves",grades:"Notes",report:"Bulletin",schools:"Écoles",add:"Ajouter",name:"Nom",coef:"Coefficient",cls:"Classe",subj:"Matière",avg:"Moyenne",print:"Imprimer",choose:"Choisir",none:"Aucune donnée",note:"Note",sname:"Nom de l’école",on:"Actif",off:"Suspendu",tog:"Suspendre/Activer",load:"Chargement…",settings:"Structure des notes",save:"Enregistrer",gmax:"Note maximale",pass:"Moyenne de passage",terms:"Nombre de périodes",curr:"Monnaie",level:"Niveau",term:"Période",saved:"Enregistré",passed:"Admis",failed:"Non admis",staff:"Personnels",personnels:"Personnels",users:"Utilisateurs",fname:"Nom complet",uname:"Nom d’utilisateur",r_teacher:"Enseignant",r_accountant:"Comptable",r_it:"Informaticien",r_parent:"Parent",matr:"Matricule",chk2:"Nom, utilisateur (lettres/chiffres) et mot de passe (6+) requis",nomat:"Matricule introuvable",fees:"Frais",soon:"Bientôt disponible",hint:"Personnel/parents : utilisateur@école (ex. prof1@ecole1)",levels:"Niveaux",yes:"Oui",no:"Non",nc:"Notes non calculées",tr:"Transcription",delq:"Supprimer",also:"Cela supprimera aussi :",andgr:"toutes les notes liées"},
 en:{login:"Login",id:"Identifier",pw:"Password",go:"Log in",out:"Log out",bad:"Wrong identifier or password",noprof:"Account not authorized",susp:"School suspended",chk:"Identifier (letters/digits), name, password (6+)",classes:"Classes",subjects:"Subjects",students:"Students",grades:"Grades",report:"Report card",schools:"Schools",add:"Add",name:"Name",coef:"Coefficient",cls:"Class",subj:"Subject",avg:"Average",print:"Print",choose:"Choose",none:"No data",note:"Grade",sname:"School name",on:"Active",off:"Suspended",tog:"Suspend/Activate",load:"Loading…",settings:"Grading structure",save:"Save",gmax:"Maximum grade",pass:"Pass mark",terms:"Number of terms",curr:"Currency",level:"Level",term:"Term",saved:"Saved",passed:"Passed",failed:"Failed",staff:"Staff",personnels:"Staff",users:"Users",fname:"Full name",uname:"Username",r_teacher:"Teacher",r_accountant:"Accountant",r_it:"IT officer",r_parent:"Parent",matr:"Student ID",chk2:"Name, username (letters/digits) and password (6+) required",nomat:"Student ID not found",fees:"Fees",soon:"Coming soon",hint:"Staff/parents: username@school (e.g. teacher1@ecole1)",levels:"Levels",yes:"Yes",no:"No",nc:"Uncalculated scores",tr:"Transcript",delq:"Delete",also:"This will also delete:",andgr:"all related grades"},
 ar:{login:"تسجيل الدخول",id:"المعرّف",pw:"كلمة المرور",go:"دخول",out:"خروج",bad:"المعرّف أو كلمة المرور غير صحيحة",noprof:"حساب غير مصرّح",susp:"المدرسة موقوفة",chk:"المعرّف (حروف/أرقام) والاسم وكلمة المرور (6+)",classes:"الأقسام",subjects:"المواد",students:"التلاميذ",grades:"الدرجات",report:"كشف النقاط",schools:"المدارس",add:"إضافة",name:"الاسم",coef:"المعامل",cls:"القسم",subj:"المادة",avg:"المعدل",print:"طباعة",choose:"اختر",none:"لا توجد بيانات",note:"الدرجة",sname:"اسم المدرسة",on:"نشطة",off:"موقوفة",tog:"إيقاف/تفعيل",load:"جاري التحميل…",settings:"هيكل النقاط",save:"حفظ",gmax:"الدرجة القصوى",pass:"درجة النجاح",terms:"عدد الفترات",curr:"العملة",level:"المرحلة",term:"الفترة",saved:"تم الحفظ",passed:"ناجح",failed:"راسب",staff:"الموظفون",personnels:"الموظفون",users:"المستخدمون",fname:"الاسم الكامل",uname:"اسم المستخدم",r_teacher:"معلم",r_accountant:"محاسب",r_it:"مسؤول المعلوماتية",r_parent:"ولي الأمر",matr:"رقم التسجيل",chk2:"الاسم واسم المستخدم (حروف/أرقام) وكلمة المرور (6+) مطلوبة",nomat:"رقم التسجيل غير موجود",fees:"الرسوم",soon:"قريبًا",hint:"الموظفون/أولياء الأمور: المستخدم@المدرسة (مثال teacher1@ecole1)",levels:"المراحل",yes:"نعم",no:"لا",nc:"النقاط غير المحتسبة",tr:"كشف تفصيلي",delq:"حذف",also:"سيتم أيضًا حذف:",andgr:"جميع الدرجات المرتبطة"}};
-let lang='fr',user=null,tab='home',sel={},err='',D={schools:[],levels:[],classes:[],subjects:[],students:[],staff:[],years:[],grading:[],personnel:[],ts:[]},G={},curPhoto='',photoDirty=false;
+let lang='fr',user=null,tab='home',sel={},err='',D={schools:[],levels:[],classes:[],subjects:[],students:[],staff:[],years:[],grading:[],personnel:[],ts:[]},G={},GR=[],WY='',curPhoto='',photoDirty=false;
 try{lang=localStorage.getItem('gs_lang')||'fr'}catch(e){}
 const t=k=>T[lang][k]||k;
 const Z=(a,b,c)=>({fr:a,en:b,ar:c})[lang];
@@ -116,7 +116,7 @@ async function load(){
  const e=r.find(z=>z.error);if(e)note(e.error.message);
  D.schools=r[0].data||[];D.levels=r[1].data||[];D.classes=r[2].data||[];D.subjects=r[3].data||[];D.students=r[4].data||[];D.years=r[7].data||[];D.grading=r[8].data||[];D.personnel=r[9].data||[];D.ts=r[10].data||[];
  D.staff=(r[6].data||[]).filter(p=>!['school_admin','superadmin'].includes(p.role));
- G={};(r[5].data||[]).forEach(g=>{G[g.student_id+'_'+g.subject_id+'_'+g.term+'_'+g.test]=g.value})}
+ GR=r[5].data||[];initWY()}
 async function login(){
  const i=$('i').value.trim(),p=$('p').value;
  const {error}=await sb.auth.signInWithPassword({email:toEmail(i),password:p});
@@ -419,20 +419,31 @@ const pp=()=>sel.p==null?1:sel.p,kk=()=>sel.k==null?1:sel.k;
 function eff(g){return isSP(g.type)?(sel.p===0?[0,0]:[pp(),kk()]):(sel.k===0?[0,0]:[1,kk()])}
 function pickP(v){sel.p=v;sel.k=1;render()}
 function chk(el,mn,mx){const v=el.value;if(v!==''){const n=numv(v);if(!/^-?[0-9]*[.,]?[0-9]*$/.test(v)||(n!=null&&(n>mx||n<mn))){el.classList.add('bad');el.value=el.dataset.old||'';setTimeout(()=>el.classList.remove('bad'),700);return}}el.dataset.old=el.value}
-async function setGrade(e,s,v,tm,ts,mn,mx){const k=`${e}_${s}_${tm}_${ts}`,n=numv(v);
- if(String(v).trim()===''||n==null){delete G[k];await sb.from('grades').delete().eq('student_id',e).eq('subject_id',s).eq('term',tm).eq('test',ts);return}
- const z=Math.max(mn,Math.min(mx,n));G[k]=z;const {error}=await sb.from('grades').upsert({school_id:user.sid,student_id:e,subject_id:s,term:tm,test:ts,value:z},{onConflict:'student_id,subject_id,term,test'});if(error)note(error.message)}
+async function setGrade(e,s,v,tm,ts,mn,mx){
+ if(!WY)return note(Z('Ajoutez d’abord une année scolaire (Accueil).','Add a school year first (Home).','أضف سنة دراسية أولاً (الرئيسية).'));
+ const k=`${e}_${s}_${tm}_${ts}`,n=numv(v),same=g=>g.student_id==e&&g.subject_id==s&&g.year==WY&&g.term==tm&&g.test==ts;
+ if(String(v).trim()===''||n==null){delete G[k];GR=GR.filter(g=>!same(g));await sb.from('grades').delete().eq('student_id',e).eq('subject_id',s).eq('year',WY).eq('term',tm).eq('test',ts);return}
+ const z=Math.max(mn,Math.min(mx,n));G[k]=z;const ex=GR.find(same);if(ex)ex.value=z;else GR.push({school_id:user.sid,student_id:e,subject_id:s,year:WY,term:tm,test:ts,value:z});
+ const {error}=await sb.from('grades').upsert({school_id:user.sid,student_id:e,subject_id:s,year:WY,term:tm,test:ts,value:z},{onConflict:'student_id,subject_id,year,term,test'});if(error)note(error.message)}
+const classFor=(s,yr)=>(!s.year||s.year==yr)?s.class_id:((s.history||[]).find(h=>h.year==yr)||{}).class_id;
+const enrolled=(s,cid,yr)=>classFor(s,yr)==cid;
+const allYears=()=>[...new Set([...D.years.map(y=>y.name),...D.students.flatMap(s=>[s.year,...(s.history||[]).map(h=>h.year)]),...GR.map(g=>g.year)].filter(Boolean))].sort().reverse();
+function buildG(){G={};GR.forEach(g=>{if(g.year==WY)G[g.student_id+'_'+g.subject_id+'_'+g.term+'_'+g.test]=g.value})}
+function initWY(){const ys=allYears();if(!WY||!ys.includes(WY)){let v='';try{v=localStorage.getItem('gs_wy')||''}catch(e){}WY=ys.includes(v)?v:(ys[0]||'')}buildG()}
+function setWY(v){WY=v;try{localStorage.setItem('gs_wy',v)}catch(e){}buildG();render()}
+const ySel=()=>`<select onchange="setWY(this.value)">${allYears().map(y=>`<option ${y==WY?'selected':''}>${esc(y)}</option>`).join('')||'<option value="">—</option>'}</select>`;
 const tNames=sid=>[...new Set(D.ts.filter(x=>x.subject_id==sid).map(x=>x.teacher_name||(D.staff.find(p=>p.user_id==x.user_id)||{}).full_name||'').filter(Boolean))].join(', ');
 function footText(){const d=new Date(),q=n=>String(n).padStart(2,'0'),tm=`${q(d.getHours())}:${q(d.getMinutes())}:${q(d.getSeconds())}`,dt=d.toLocaleDateString(lang=='ar'?'ar':lang=='en'?'en-GB':'fr-FR',{day:'2-digit',month:'long',year:'numeric'});
  return Z(`Développé par Gandal Solutions | +224 623 36 60 69 | imprimé le ${dt} à ${tm}`,`Developed by Gandal Solutions | +224 623 36 60 69 | printed on ${dt} at ${tm}`,`تطوير Gandal Solutions | +224 623 36 60 69 | طُبع في ${dt} الساعة ${tm}`)}
 window.addEventListener('beforeprint',()=>document.querySelectorAll('.pfoot').forEach(e=>e.textContent=footText()));
 const mean=a=>{a=a.filter(z=>z!=null);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null};
 function notesView(){
- const C=D.classes.map(cl),S=D.subjects.filter(x=>x.class_id==sel.c),E=D.students.filter(x=>x.class_id==sel.c&&!x.exit_date),sn=s=>s.nom?s.nom+' '+(s.prenom||''):s.name,Ex=E.map(s=>({id:s.id,name:sn(s)})),Em=E.map(s=>({id:s.id,name:s.matricule||sn(s)}));
+ if(user.role=='parent'&&D.students[0]){const c0=D.students[0];sel.c=classFor(c0,WY)||c0.class_id;sel.e=c0.id}
+ const C=D.classes.map(cl),S=D.subjects.filter(x=>x.class_id==sel.c),E=D.students.filter(x=>enrolled(x,sel.c,WY)&&!x.exit_date),sn=s=>s.nom?s.nom+' '+(s.prenom||''):s.name,Ex=E.map(s=>({id:s.id,name:sn(s)})),Em=E.map(s=>({id:s.id,name:s.matricule||sn(s)}));
  const g=sel.c?gOf(sel.c):null,noG=sel.c&&!g?`<p class="err">${Z('Configurez d’abord la structure des notes de ce niveau (Les notes › Structure des notes).','First set up the grading structure for this level (Grades › Grading structure).','اضبط أولاً هيكل النقاط لهذه المرحلة (النقاط › هيكل النقاط).')}</p>`:'';
  const annL=Z('Annuelle','Annual','سنوية');
  if(tab=='grades'){
-  let h=`<div class="card">`+(false?'':`<div class="row"><select onchange="sel.s=null;sel.p=null;sel.k=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('s',this.value)">${opts(S,sel.s)}</select></div>`)+noG;
+  let h=`<div class="card">`+(false?'':`<div class="row">${ySel()}<select onchange="sel.s=null;sel.p=null;sel.k=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('s',this.value)">${opts(S,sel.s)}</select></div>`)+noG;
   if(g){const sp=isSP(g.type),annOnly=sp&&sel.p===0;
    h+=`<div class="row">`+(sp?`<select onchange="pickP(+this.value)">${g.periods.map((p,i)=>`<option value="${i+1}" ${pp()==i+1?'selected':''}>${esc(p.name)}</option>`).join('')}${g.annual=='direct'?`<option value="0" ${sel.p===0?'selected':''}>${annL}</option>`:''}</select>`:'')+
    (annOnly?'':`<select onchange="pick('k',+this.value)">${g.periods[sp?Math.min(pp(),g.periods.length)-1:0].tests.map((n,j)=>`<option value="${j+1}" ${kk()==j+1?'selected':''}>${esc(n)}</option>`).join('')}${!sp&&g.annual=='direct'?`<option value="0" ${sel.k===0?'selected':''}>${annL}</option>`:''}</select>`)+`</div>`;
@@ -459,7 +470,7 @@ function notesView(){
   let rank=null;if(showRank&&gen!=null){const all=mates.map(s=>metric(calc(s.id))).filter(v=>v!=null);rank=1+all.filter(v=>v>gen+1e-9).length}
   const ordn=(n,sx)=>lang=='fr'?(n==1?(sx=='F'?'1ère':'1er'):n+'e'):lang=='en'?n+(([11,12,13].includes(n%100))?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th')):(n==1?(sx=='F'?'الأولى':'الأول'):String(n));
   const plabel=rp=='ann'?Z('Annuel','Annual','سنوي'):rp=='all'?allL:g.periods[+rp-1].name,sc=SC();
-  const head=`<div class="bhead">${sc.logo?`<img src="${sc.logo}" alt="">`:''}<div><b style="font-size:1.1rem">${esc(sc.name||user.name)}</b><br>${esc(sc.address||'')}${sc.address?'<br>':''}${[sc.phone,sc.email].filter(Boolean).map(esc).join(' · ')}</div></div><h3 style="text-align:center;margin:10px 0 2px">${Z('BULLETIN DE NOTES','REPORT CARD','كشف النقاط')} — ${esc(plabel)}</h3><p style="text-align:center;margin:0 0 10px">${Z('Année scolaire','School year','السنة الدراسية')} : <b>${esc(stu.year||'')}</b></p>`;
+  const head=`<div class="bhead">${sc.logo?`<img src="${sc.logo}" alt="">`:''}<div><b style="font-size:1.1rem">${esc(sc.name||user.name)}</b><br>${esc(sc.address||'')}${sc.address?'<br>':''}${[sc.phone,sc.email].filter(Boolean).map(esc).join(' · ')}</div></div><h3 style="text-align:center;margin:10px 0 2px">${Z('BULLETIN DE NOTES','REPORT CARD','كشف النقاط')} — ${esc(plabel)}</h3><p style="text-align:center;margin:0 0 10px">${Z('Année scolaire','School year','السنة الدراسية')} : <b>${esc(WY)}</b></p>`;
   const incTbl=`<div style="overflow-x:auto"><table><tr><th>${t('subj')}</th><th>${t('coef')}</th>${heads.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${rows.map(x=>`<tr><td>${esc(x.s.name)}</td><td>${x.s.coef}</td>${cellsOf(x).map((v,i,a)=>i==a.length-1?`<td><b>${fmt(v)}</b></td>`:`<td>${fmt(v)}</td>`).join('')}</tr>`).join('')}<tr><th colspan="2">${t('avg')}</th>${heads.map((_,c)=>`<th>${fmt(wav(rows,x=>cellsOf(x)[c]))}</th>`).join('')}</tr></table></div>`;
   let uniTbl='';
   if(uni){
@@ -469,15 +480,15 @@ function notesView(){
    const gens=showRank?cls.map(c=>metric(c.rows)).filter(v=>v!=null):[],tc=rows.reduce((a,x)=>a+(valOf(x)!=null?+x.s.coef:0),0);
    uniTbl=`<div style="overflow-x:auto"><table class="ut"><tr><th>${t('subj')}</th><th>${Z('Coef','Coef','المعامل')}</th><th>${Z('Min','Min','الأدنى')}</th><th>${Z('Max','Max','الأقصى')}</th><th>${Z('Moyenne','Average','المعدل')}</th><th>${Z('Rang','Rank','الترتيب')}</th></tr>${trs}<tr><th>${Z('Moyenne générale','Overall average','المعدل العام')}</th><th></th><th></th><th></th><th>${fmt(gen)}</th><th></th></tr></table></div>`}
   r=`<div class="card">${head}<p><b>${esc(nm(Ex,sel.e))}</b>${stu.matricule?' · '+esc(stu.matricule):''}<br>${esc(nm(C,sel.c))}</p>${uni?uniTbl:incTbl}<h3>${t('avg')}: ${fmt(gen)} / ${fmt(mx)}${gen!=null?` — ${gen>=passOf(g)?t('passed'):t('failed')}`:''}</h3>${mention?`<p><b>${esc(mention)}</b></p>`:''}${showRank?`<p>${Z('Effectif de la classe','Students in class','عدد التلاميذ في القسم')} : <b>${mates.length}</b><br>${Z('Rang','Position','الترتيب')} : <b>${rank==null?'-':ordn(rank,stu.sex)}</b></p>`:''}<button class="btn noprint" onclick="window.print()">${t('print')}</button>${uni?`<div class="pfoot">${footText()}</div>`:''}</div>`}
- return (user.role=='parent'?`<div class="card noprint"><div class="row">${rpSel}${rmSel}</div></div>`:`<div class="card noprint"><div class="row"><select onchange="sel.e=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(Em,sel.e)}</select>${rpSel}${rmSel}</div>${noG}</div>`)+r}
+ return (user.role=='parent'?`<div class="card noprint"><div class="row">${ySel()}${rpSel}${rmSel}</div></div>`:`<div class="card noprint"><div class="row">${ySel()}<select onchange="sel.e=null;pick('c',this.value)">${opts(C,sel.c)}</select><select onchange="pick('e',this.value)">${opts(Em,sel.e)}</select>${rpSel}${rmSel}</div>${noG}</div>`)+r}
 
 /* ---- Notes non calculées (raw scores sheet, A4) ---- */
-function ncPick(k,v){sel[k]=v||null;({nl:['np','nc','ns'],nc:['ns']}[k]||[]).forEach(x=>sel[x]=null);render()}
+function ncPick(k,v){if(k=='ny')return setWY(v);sel[k]=v||null;({nl:['np','nc','ns'],nc:['ns']}[k]||[]).forEach(x=>sel[x]=null);render()}
 const ncPers=g=>{const o=g.periods.map((p,i)=>({v:String(i),name:p.name||tlab(g.type),tests:p.tests,term:i+1}));if(g.annual=='direct')o.push({v:'A',name:Z('Annuelle (examen annuel)','Annual (annual exam)','سنوية (امتحان سنوي)'),tests:[Z('Examen annuel','Annual exam','الامتحان السنوي')],term:0});return o};
 const fv=v=>v==null?'':fmt(v);
 function schoolHead(){const sc=SC();return `<div class="bhead">${sc.logo?`<img src="${sc.logo}" alt="">`:''}<div><b style="font-size:1.1rem">${esc(sc.name||user.name)}</b><br>${esc(sc.address||'')}${sc.address?'<br>':''}${[sc.phone,sc.email].filter(Boolean).map(esc).join(' · ')}</div></div>`}
 function ncView(){
- const years=D.years.map(y=>y.name).sort().reverse(),yr=sel.ny||years[0]||'',lvls=D.levels.filter(l=>D.grading.some(g=>g.level_id==l.id)),g=sel.nl?D.grading.find(x=>x.level_id==sel.nl):null,ps=g?ncPers(g):[];
+ const years=allYears(),yr=WY,lvls=D.levels.filter(l=>D.grading.some(g=>g.level_id==l.id)),g=sel.nl?D.grading.find(x=>x.level_id==sel.nl):null,ps=g?ncPers(g):[];
  if(g&&ps.length==1&&!sel.np)sel.np=ps[0].v;
  const cls=sel.nl?D.classes.filter(c=>c.level_id==sel.nl):[],subs=sel.nc?D.subjects.filter(s=>s.class_id==sel.nc):[];
  const sh=(id,label,o,v,ph,dis)=>`<label>${label}</label><select ${dis?'disabled':''} onchange="ncPick('${id}',this.value)"><option value="">${ph}</option>${o.map(x=>`<option value="${esc(x.v)}" ${String(x.v)==String(v)?'selected':''}>${esc(x.t)}</option>`).join('')}</select>`;
@@ -492,7 +503,7 @@ function ncView(){
  if(g&&sub&&pers.length){
   const cols=[];pers.forEach(p=>p.tests.forEach((n,j)=>cols.push({term:p.term,test:p.term==0?0:j+1,name:n})));
   const val=(s,c)=>G[`${s.id}_${sub.id}_${c.term}_${c.test}`],sn=s=>s.nom?s.nom+' '+(s.prenom||''):s.name;
-  const inYear=s=>(s.class_id==sel.nc&&(!s.year||s.year==yr))||(s.history||[]).some(x=>x.year==yr&&x.class_id==sel.nc);
+  const inYear=s=>enrolled(s,sel.nc,yr);
   const list=D.students.filter(s=>inYear(s)&&(!s.exit_date||cols.some(c=>val(s,c)!=null))).sort((a,b)=>(a.matricule||'').localeCompare(b.matricule||'')),grp=pv=='T'&&pers.length>1,wide=cols.length>8;
   const c0=D.classes.find(c=>c.id==sel.nc)||{},plab=pv=='T'?Z('Toutes les périodes','All periods','كل الفترات'):pers[0].name;
   const th=grp?`<tr><th rowspan="2">${Z('N°','No','رقم')}</th><th rowspan="2">${t('matr')}</th><th rowspan="2">${Z('Nom de l’élève','Student name','اسم التلميذ')}</th>${pers.map(p=>`<th colspan="${p.tests.length}">${esc(p.name)}</th>`).join('')}</tr><tr>${cols.map(c=>`<th>${esc(c.name)}</th>`).join('')}</tr>`:`<tr><th>${Z('N°','No','رقم')}</th><th>${t('matr')}</th><th>${Z('Nom de l’élève','Student name','اسم التلميذ')}</th>${cols.map(c=>`<th>${esc(c.name)}</th>`).join('')}</tr>`;
